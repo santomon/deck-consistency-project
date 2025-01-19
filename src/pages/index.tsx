@@ -21,11 +21,7 @@ export default function Home() {
     const getCardInfo = async (cardIds?: Uint32Array ) => {
         const commaSeparatedIds = cardIds?.join(',');
         const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const jsonResponse = await response.json();
-        console.log("response", jsonResponse);
-        const responseData = YGOCardInfoResponseSchema.parse(jsonResponse);
-        console.log("responseData", responseData);
+        const responseData = YGOCardInfoResponseSchema.parse(await response.json());
         return responseData.data;
     }
 
