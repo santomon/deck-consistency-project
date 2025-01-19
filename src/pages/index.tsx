@@ -46,19 +46,19 @@ export default function Home() {
 
     const [mainDeckInfoQueryResult, extraDeckInfoQueryResult, sideDeckInfoQueryResult] = useQueries([
         {
-            queryKey: ['cardInfo', ydkeResult?.main],
+            queryKey: ['cardInfo', ydkeResult.main.join(',')],
             queryFn: () => getCardInfo(mainDeckIds),
-            enabled: !!ydkeResult,
+            enabled: ydkeResult.main.length > 0,
         },
         {
-            queryKey: ['cardInfo', ydkeResult?.extra],
+            queryKey: ['cardInfo', ydkeResult.extra.join(',')],
             queryFn: () => getCardInfo(ydkeResult.extra),
-            enabled: !!ydkeResult,
+            enabled: ydkeResult.extra.length >  0,
         },
         {
-            queryKey: ['cardInfo', ydkeResult?.side],
+            queryKey: ['cardInfo', ydkeResult.side.join(',')],
             queryFn: () => getCardInfo(ydkeResult.side),
-            enabled: !!ydkeResult,
+            enabled: ydkeResult.side.length > 0,
         }
     ])
 
