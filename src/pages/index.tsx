@@ -9,6 +9,13 @@ const createPlaceHolderCardInfoResponse = () => {
     return { data: []}
 }
 
+const getCardInfo = async (cardIds?: Uint32Array ) => {
+    const commaSeparatedIds = cardIds?.join(',');
+    const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`);
+    const responseData = YGOCardInfoResponseSchema.parse(await response.json());
+    return responseData.data;
+}
+
 export default function Home() {
     const [inputValue, setInputValue] = useState(''); // State maintenance
 
@@ -18,12 +25,6 @@ export default function Home() {
     console.log("ydke result", ydkeResult);
     console.log(process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL)
 
-    const getCardInfo = async (cardIds?: Uint32Array ) => {
-        const commaSeparatedIds = cardIds?.join(',');
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`);
-        const responseData = YGOCardInfoResponseSchema.parse(await response.json());
-        return responseData.data;
-    }
 
     const [mainDeckInfoQueryResult, extraDeckInfoQueryResult, sideDeckInfoQueryResult] = useQueries([
         {
