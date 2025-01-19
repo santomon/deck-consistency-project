@@ -81,7 +81,7 @@ export default function Home() {
         return (
             <div key={`card-info-display-${cardId}-${index}`}>
                 <h2>{card.name}</h2>
-                <img src={card?.card_images?.[0]?.image_url} alt={card.name} />
+                <img width={120} src={card.card_images[0]?.image_url} alt={card.name} />
             </div>
         )
     }
