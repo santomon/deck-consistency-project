@@ -35,7 +35,7 @@ export default function Home() {
             side: Array.from(ydkeResult.side),
         }
     } catch (e) {
-        console.error(e);
+
         ydkeResult = {
             main: new Array<number>(),
             extra: new Array<number>(),
@@ -52,16 +52,19 @@ export default function Home() {
             queryKey: ['cardInfo', ydkeResult.main.join(',')],
             queryFn: () => getCardInfo(mainDeckIds),
             enabled: ydkeResult.main.length > 0,
+            initialData: [],
         },
         {
             queryKey: ['cardInfo', ydkeResult.extra.join(',')],
             queryFn: () => getCardInfo(ydkeResult.extra),
             enabled: ydkeResult.extra.length >  0,
+            initialData: [],
         },
         {
             queryKey: ['cardInfo', ydkeResult.side.join(',')],
             queryFn: () => getCardInfo(ydkeResult.side),
             enabled: ydkeResult.side.length > 0,
+            initialData: [],
         }
     ])
 
