@@ -70,7 +70,7 @@ export default function Home() {
     if (mainDeckQueryError || mainDeckInfo === undefined) {
         return (
             <div>
-                <h1>Error fetching main deck info</h1>
+                <h1>Error fetching data from ygoprodecks server</h1>
             </div>
         )
     }
