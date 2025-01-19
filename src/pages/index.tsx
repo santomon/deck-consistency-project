@@ -41,12 +41,13 @@ export default function Home() {
     }
 
     console.log("ydkeResult", ydkeResult)
+    const mainDeckIds = ydkeResult.main;
 
 
     const [mainDeckInfoQueryResult, extraDeckInfoQueryResult, sideDeckInfoQueryResult] = useQueries([
         {
             queryKey: ['cardInfo', ydkeResult?.main],
-            queryFn: () => getCardInfo(ydkeResult.main),
+            queryFn: () => getCardInfo(mainDeckIds),
             enabled: !!ydkeResult,
         },
         {
