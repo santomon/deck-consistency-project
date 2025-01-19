@@ -22,6 +22,9 @@ const getCardInfo = async (cardIds?: number[] ) => {
 export default function Home() {
     const [inputValue, setInputValue] = useState(''); // State maintenance
 
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setInputValue(e.target.value); // Update state
+    };
 
     let ydkeResult;
     try {
@@ -61,10 +64,6 @@ export default function Home() {
             enabled: ydkeResult.side.length > 0,
         }
     ])
-
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value); // Update state
-    };
 
     const {data: mainDeckInfo, isError: mainDeckQueryError} = mainDeckInfoQueryResult;
 
