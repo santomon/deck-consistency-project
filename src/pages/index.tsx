@@ -22,7 +22,6 @@ export default function Home() {
     const {data: ydkeResult, isSuccess} = useQuery(['ydke', inputValue], async () => {
         return ydke.parseURL(inputValue);
     }, {enabled: inputValue.length > 0, initialData: {main: new Uint32Array(), extra: new Uint32Array(), side: new Uint32Array()} });
-    console.log("ydke result", ydkeResult);
     console.log(process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL)
 
 
