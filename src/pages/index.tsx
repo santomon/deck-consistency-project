@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import * as ydke from "ydke";
 import {ChangeEvent, useState} from "react";
-import {useQuery} from "react-query";
+import {useQueries, useQuery} from "react-query";
 
 export default function Home() {
     const [inputValue, setInputValue] = useState(''); // State maintenance
@@ -10,7 +10,19 @@ export default function Home() {
     const {data: ydkeResult, isSuccess} = useQuery(['ydke', inputValue], async () => {
         return ydke.parseURL(inputValue);
     }, {enabled: inputValue.length > 0, initialData: {main: new Uint32Array(), extra: new Uint32Array(), side: new Uint32Array()} });
-    console.log(ydkeResult);
+    console.log("ydke result", ydkeResult);
+    console.log(process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL)
+
+    const getCardInfo = async (cardId: number) => {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}/cards/${cardId}`);
+        return response.json();
+    }
+
+    useQueries([
+        {
+
+        }
+    ])
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value); // Update state
