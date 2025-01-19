@@ -3,6 +3,11 @@ import Link from "next/link";
 import * as ydke from "ydke";
 import {ChangeEvent, useState} from "react";
 import {useQueries, useQuery} from "react-query";
+import {YGOCardInfoResponseSchema} from "~/types";
+
+const createPlaceHolderCardInfoResponse = () => {
+    return { data: []}
+}
 
 export default function Home() {
     const [inputValue, setInputValue] = useState(''); // State maintenance
@@ -13,16 +18,35 @@ export default function Home() {
     console.log("ydke result", ydkeResult);
     console.log(process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL)
 
-    const getCardInfo = async (cardId: number) => {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}/cards/${cardId}`);
-        return response.json();
+    const getCardInfo = async (cardIds?: Uint32Array ) => {
+        const commaSeparatedIds = cardIds?.join(',');
+        const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const jsonResponse = await response.json();
+        console.log("response", jsonResponse);
+        const responseData = YGOCardInfoResponseSchema.parse(jsonResponse);
+        console.log("responseData", responseData);
+        return responseData.data;
     }
 
-    useQueries([
+    const [mainDeckInfoQueryResult, extraDeckInfoQueryResult, sideDeckInfoQueryResult] = useQueries([
         {
-
+            queryKey: ['cardInfo', ydkeResult?.main],
+            queryFn: () => getCardInfo(ydkeResult?.main),
+            enabled: isSuccess,
+        },
+        {
+            queryKey: ['cardInfo', ydkeResult?.extra],
+            queryFn: () => getCardInfo(ydkeResult?.extra),
+            enabled: isSuccess,
+        },
+        {
+            queryKey: ['cardInfo', ydkeResult?.side],
+            queryFn: () => getCardInfo(ydkeResult?.side),
+            enabled: isSuccess,
         }
     ])
+    console.log("mainDeckInfo", mainDeckInfoQueryResult);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value); // Update state
