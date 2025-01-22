@@ -4,6 +4,7 @@ import * as ydke from "ydke";
 import { ChangeEvent, useState } from "react";
 import { useQueries, useQuery, useQueryClient } from "react-query";
 import { CardInfo, YGOCardInfoResponseSchema } from "~/types";
+import {useDeckStore} from "~/store";
 
 const createPlaceHolderCardInfoResponse = (): CardInfo[] => {
   return [];
@@ -28,6 +29,7 @@ const queryKeyFactory = {
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const queryClient = useQueryClient();
+  const mainDeckIds = useDeckStore((state) => state.mainDeckIds);
   const xdd = queryClient.getQueryData<CardInfo[]>(["cardInfo", 1]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
