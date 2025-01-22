@@ -67,22 +67,7 @@ export default function Home() {
       };
     }),
   );
-  console.log("mainDeckQueryResults", mainDeckQueryResults);
 
-  const mainDeckCards = mainDeckIds.map((cardId, index) => {
-    if (mainDeckQueryResults?.[index]) {
-      const {isSuccess, isError, data} = mainDeckQueryResults[index];
-    }
-    // const card = mainDeckInfo.find((card) => card.id === cardId);
-    // if (!card) return null;
-    // return (
-    //     <div key={`card-info-display-${cardId}-${index}`}>
-    //         <h2>{card.name}</h2>
-    //         <img width={120} src={card.card_images[0]?.image_url} alt={card.name} />
-    //     </div>
-    // )
-    return null;
-  });
 
   return (
     <>
@@ -114,7 +99,6 @@ export default function Home() {
             Parse YDKE
           </button>
         </div>
-        {mainDeckCards}
       </main>
     </>
   );
