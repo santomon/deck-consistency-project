@@ -5,6 +5,7 @@ import { ChangeEvent, useState } from "react";
 import { useQueries, useQuery, useQueryClient } from "react-query";
 import { CardInfo, YGOCardInfoResponseSchema } from "~/types";
 import {useDeckStore} from "~/store";
+import {main} from "@popperjs/core";
 
 const createPlaceHolderCardInfoResponse = (): CardInfo[] => {
   return [];
@@ -30,30 +31,32 @@ export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const queryClient = useQueryClient();
   const mainDeckIds = useDeckStore((state) => state.mainDeckIds);
+  const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck)
   const xdd = queryClient.getQueryData<CardInfo[]>(["cardInfo", 1]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value); // Update state
   };
 
-  let ydkeResult;
-  try {
-    ydkeResult = ydke.parseURL(inputValue); //
-    ydkeResult = {
-      main: Array.from(ydkeResult.main),
-      extra: Array.from(ydkeResult.extra),
-      side: Array.from(ydkeResult.side),
-    };
-  } catch (e) {
-    ydkeResult = {
-      main: new Array<number>(),
-      extra: new Array<number>(),
-      side: new Array<number>(),
-    };
-  }
 
-  console.log("ydkeResult", ydkeResult);
-  const mainDeckIds = ydkeResult.main;
+  const handleYDKEButtonSubmitted = () => {
+    let ydkeResult;
+    try {
+      ydkeResult = ydke.parseURL(inputValue); //
+      ydkeResult = {
+        main: Array.from(ydkeResult.main),
+        extra: Array.from(ydkeResult.extra),
+        side: Array.from(ydkeResult.side),
+      };
+    } catch (e) {
+      ydkeResult = {
+        main: new Array<number>(),
+        extra: new Array<number>(),
+        side: new Array<number>(),
+      };
+    }
+    replaceMainDeck(ydkeResult.main)
+  }
 
   const mainDeckQueryResults = useQueries(
     mainDeckIds.map((cardId) => {
@@ -66,7 +69,7 @@ export default function Home() {
   );
   console.log("mainDeckQueryResults", mainDeckQueryResults);
 
-  const mainDeckCards = ydkeResult.main.map((cardId, index) => {
+  const mainDeckCards = mainDeckIds.map((cardId, index) => {
     if (mainDeckQueryResults?.[index]) {
       const {isSuccess, isError, data} = mainDeckQueryResults[index];
     }

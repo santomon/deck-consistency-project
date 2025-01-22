@@ -2,6 +2,9 @@ import {createStore, create} from 'zustand';
 
 interface I_State {
     mainDeckIds: number[]
+    addCardsToMainDeck: (cardIds: number[]) => void
+    replaceMainDeck: (cardIds: number[]) => void
+    removeCardsFromMainDeck: (cardIds: number[]) => void
 }
 
 export const useDeckStore = create<I_State>((set) => {
