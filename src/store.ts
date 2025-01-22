@@ -37,6 +37,12 @@ export const useDeckStore = create<I_State>((set) => {
                 mainDeckIds: newMainDeckIds
             }
         }),
+        replaceMainDeck: (cardIds: number[]) => set((state) => {
+            return {
+                ...state,
+                mainDeckIds: cardIds
+            }
+        }),
     }
 
 })
