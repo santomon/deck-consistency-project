@@ -1,10 +1,10 @@
-import {createStore} from 'zustand';
+import {createStore, create} from 'zustand';
 
 interface I_State {
     mainDeckIds: number[]
 }
 
-const useStore = createStore<I_State>((set) => {
+export const useDeckStore = create<I_State>((set) => {
     return {
         mainDeckIds: [],
         addCardsToMainDeck: (cardIds: number[]) => set((state) => {
