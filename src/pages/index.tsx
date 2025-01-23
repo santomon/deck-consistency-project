@@ -78,28 +78,24 @@ export default function Home() {
         <meta name="description" content="Deck Consistency Simulation" />
         {/*<link rel="icon" href="/favicon.ico" />*/}
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-teal-700">
+      <main className="flex min-h-screen flex-col items-center justify-start bg-teal-700">
         <div className="flex flex-col items-center p-4">
-          <label
-            htmlFor="textInput"
-            className="mb-2 text-lg font-medium text-gray-700"
-          >
-            Enter Text
-          </label>
-          <input
-            id="textInput"
-            type="text"
-            value={inputValue}
-            onChange={handleChange}
-            placeholder="Type something..."
-            className="w-80 rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleYDKEButtonSubmitted}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md shadow-sm"
+          <div className={"flex flex-row items-center gap-2"}>
+            <input
+                id="textInput"
+                type="text"
+                value={inputValue}
+                onChange={handleChange}
+                placeholder="Type something..."
+                className="w-80 rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+                onClick={handleYDKEButtonSubmitted}
+                className="p-2 bg-blue-500 text-white rounded-md shadow-sm"
             >
-            Parse YDKE
-          </button>
+              Parse YDKE
+            </button>
+          </div>
         </div>
         <DeckView />
       </main>
