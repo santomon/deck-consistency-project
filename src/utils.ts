@@ -1,4 +1,4 @@
-import {CardInfo, YGOCardInfoResponseSchema} from "~/types";
+import {CardInfo, FrameType, YGOCardInfoResponseSchema} from "~/types";
 
 export const queryKeyFactory = {
     cardInfo: (cardId: number) => ["cardInfo", cardId],
@@ -20,3 +20,16 @@ export const getCardInfo = async (cardIds?: number[]) => {
     const responseData = YGOCardInfoResponseSchema.parse(await response.json());
     return responseData.data;
 };
+
+
+export const lookUpFrameTypeSortingKey = (frameType: string) => {
+  if (frameType === FrameType.EFFECT) {
+    return 4;
+  } else if (frameType === FrameType.NORMAL) {
+    return 1;
+  } else if (frameType === FrameType.SPELL) {
+    return 0;
+  } else {
+    return 2;
+  }
+}

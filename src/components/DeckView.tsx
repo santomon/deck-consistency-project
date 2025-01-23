@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient } from "react-query";
-import { queryKeyFactory } from "~/utils";
+import { lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
 import { useDeckStore } from "~/store";
 import { useCardInfo } from "~/queries";
+import { CardInfo } from "~/types";
 
 const frameTypeStyleLookup = {
   spell: {
@@ -50,6 +51,19 @@ const DeckView = ({}) => {
   const queryClient = useQueryClient();
   const mainDeck = useDeckStore((state) => state.mainDeck);
 
+  const sortIDFunction = (a: number, b: number) => {
+    const frameTypeA = queryClient.getQueryData<CardInfo>(
+      queryKeyFactory.cardInfo(a),
+    )?.frameType;
+    const frameTypeB = queryClient.getQueryData<CardInfo>(
+      queryKeyFactory.cardInfo(b),
+    )?.frameType;
+
+    const sortingKeyA = frameTypeA ? lookUpFrameTypeSortingKey(frameTypeA) : 0;
+    const sortingKeyB = frameTypeB ? lookUpFrameTypeSortingKey(frameTypeB) : 0;
+    return sortingKeyA - sortingKeyB;
+  };
+
   return (
     <div className={""}>
       <table className={"table-auto"}>
@@ -60,9 +74,11 @@ const DeckView = ({}) => {
           </tr>
         </thead>
         <tbody>
-          {Array.from(mainDeck).map(([cardId, count]) => {
-            return <CardRow cardId={cardId} key={cardId} />;
-          })}
+          {Array.from(mainDeck)
+            .sort(([cardA, _], [cardB, __]) => sortIDFunction(cardA, cardB))
+            .map(([cardId, count]) => {
+              return <CardRow cardId={cardId} key={cardId} />;
+            })}
         </tbody>
       </table>
     </div>
