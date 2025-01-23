@@ -67,6 +67,13 @@ const CardInfoSchema = z.object({
   card_prices: z.array(CardPriceSchema),
 });
 
+const CardGroupSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  cardIds: z.number().array(),
+});
+type CardGroup = z.infer<typeof CardGroupSchema>;
+
 // Main data schema
 // defines the structure of the entire dataset
 const YGOCardInfoResponseSchema = z.object({
@@ -76,6 +83,6 @@ const YGOCardInfoResponseSchema = z.object({
 // Example: Infer TypeScript types from the schema
 type CardInfo = z.infer<typeof CardInfoSchema>;
 type Data = z.infer<typeof YGOCardInfoResponseSchema>;
-export type { CardInfo, Data };
+export type { CardInfo, CardGroup, Data };
 
-export { CardInfoSchema, YGOCardInfoResponseSchema };
+export { CardInfoSchema, YGOCardInfoResponseSchema, CardGroupSchema };
