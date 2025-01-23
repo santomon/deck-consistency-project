@@ -15,6 +15,13 @@ const frameTypeStyleLookup = {
   effect: {
     cellBgColor: "bg-amber-600",
   },
+  effect_pendulum: {
+    cellBgColor: "bg-gradient-to-b from-amber-600 to-green-600",
+
+  },
+  default: {  // i guess if it is in the main deck the chance is high, that it is an effect monster of some sort
+    cellBgColor: "bg-gray-600",
+  }
 };
 
 const DeckView = ({}) => {
@@ -25,7 +32,7 @@ const DeckView = ({}) => {
     <div className={""}>
       <table className={"table-auto"}>
         <thead>
-          <tr className={"bg-gray-200"}>
+          <tr className={"bg-gray-200 from-"}>
             <th className={"border-gray-500"}>Card Name</th>
             <th className={"border-gray-500"}>Count</th>
           </tr>
