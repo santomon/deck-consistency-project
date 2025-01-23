@@ -8,23 +8,7 @@ import {useDeckStore} from "~/store";
 import {main} from "@popperjs/core";
 import {queryKeyFactory} from "~/utils";
 import DeckView from "~/components/DeckView";
-
-const createPlaceHolderCardInfoResponse = (): CardInfo[] => {
-  return [];
-};
-
-const getCardInfo = async (cardIds?: number[]) => {
-  const commaSeparatedIds = cardIds?.join(",");
-  if (!commaSeparatedIds) {
-    return createPlaceHolderCardInfoResponse();
-  }
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`,
-  );
-  const responseData = YGOCardInfoResponseSchema.parse(await response.json());
-  return responseData.data;
-};
-
+import { useCardInfos } from "~/queries";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
@@ -58,15 +42,7 @@ export default function Home() {
     setInputValue("");
   }
 
-  const mainDeckQueryResults = useQueries(
-    Array.from(mainDeck).map(([cardId, count]) => {
-      return {
-        queryKey: queryKeyFactory.cardInfo(cardId),
-        queryFn: () => getCardInfo([cardId]),
-        initialData: [],
-      };
-    }),
-  );
+  const mainDeckQueryResults = useCardInfos();
   console.log("main window main deck", mainDeck)
   console.log(mainDeckQueryResults.map((mdqr) => mdqr.data))
 

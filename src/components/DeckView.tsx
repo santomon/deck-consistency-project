@@ -1,4 +1,4 @@
-import { useQueryClient } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import { queryKeyFactory } from "~/utils";
 import { useDeckStore } from "~/store";
 
@@ -23,6 +23,11 @@ const frameTypeStyleLookup = {
     cellBgColor: "bg-gray-600",
   }
 };
+
+const CardRow = ( {cardId}: {cardId: number}) => {
+  const {data: cardInfo, isSuccess} = useQuery(queryKeyFactory.cardInfo(cardId))
+
+}
 
 const DeckView = ({}) => {
   const queryClient = useQueryClient();
