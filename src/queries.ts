@@ -2,7 +2,7 @@ import { useQueries, useQuery } from "react-query";
 import {getCardInfo, queryKeyFactory} from "~/utils";
 import { useDeckStore } from "./store";
 
-const useCardInfo = (cardId: number) => {
+export const useCardInfo = (cardId: number) => {
     const mainDeck = useDeckStore((state) => state.mainDeck);
     return useQuery(
         queryKeyFactory.cardInfo(cardId),
