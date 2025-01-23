@@ -41,15 +41,15 @@ export const useDeckStore = create<I_State>((set) => {
             }
             return {
                 ...state,
-                mainDeckIds: updatedDeck
+                mainDeck: updatedDeck
             }
         }),
         replaceMainDeck: (cardIds: number[]) => set((state) => {
             const newDeck = countElements(cardIds)
-            console.log(newDeck)
+            console.log("in replace", newDeck)
             return {
                 ...state,
-                mainDeckIds: newDeck
+                mainDeck: newDeck
             }
         }),
     }
