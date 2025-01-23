@@ -5,9 +5,10 @@ import { CardLimit } from "~/constants";
 interface I_DeckState {
   mainDeck: Map<number, number>;
   groups: CardGroup[];
+  createGroup: () => number;
+  changeGroupName: (groupId: number, newName: string) => void;
   addCardToGroup: (groupId: number, cardId: number) => void;
   removeCardFromGroup: (groupId: number, cardId: number) => void;
-  createGroup: () => number;
   addCardToMainDeck: (cardId: number, limit: CardLimit) => void;
   removeCardFromMainDeck: (cardId: number) => void;
   replaceMainDeck: (cardIds: number[]) => void;
@@ -42,6 +43,21 @@ export const useDeckStore = create<I_DeckState>((set) => {
 
       return newId;
     },
+    changeGroupName: (groupId: number, newName: string) =>
+      set((state) => {
+        return {
+          ...state,
+          groups: state.groups.map((group) => {
+            if (group.id !== groupId) {
+              return group;
+            }
+            return {
+              ...group,
+              name: newName,
+            };
+          }),
+        };
+      }),
     addCardToGroup: (groupId: number, cardId: number) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
