@@ -44,9 +44,9 @@ const CardRow = ({ cardId }: { cardId: number }) => {
   const styleClassName = frameTypeStyleLookup?.[cardInfo?.frameType ?? "default"]?.cellBgColor ?? "";
 
   return (
-    <tr>
-      <td className={styleClassName}>{cardInfo?.name}</td>
-      <td>{count}</td>
+    <tr className={""}>
+      <td className={`${styleClassName} border border-black flex-grow`}>{cardInfo?.name}</td>
+      <td className={`${styleClassName} border border-black flex-grow`}>{count}</td>
     </tr>
   );
 };

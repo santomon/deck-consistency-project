@@ -29,6 +29,8 @@ export const lookUpFrameTypeSortingKey = (frameType: string) => {
     return 1;
   } else if (frameType as FrameType === FrameType.SPELL) {
     return 0;
+  } else if (frameType as FrameType === FrameType.TRAP) {
+      return - 1;
   } else {
     return 2;
   }
