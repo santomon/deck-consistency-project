@@ -3,8 +3,8 @@ import {CardInfoSchema} from "~/types";
 import {CardLimit} from "~/constants";
 
 interface I_State {
-    mainDeck: Map<number, number>
-    addCardToMainDeck: (cardId: number[], limit: CardLimit) => void
+    mainDeck: Map<number, number>,
+    addCardToMainDeck: (cardId: number, limit: CardLimit) => void
     removeCardFromMainDeck: (cardId: number) => void
     replaceMainDeck: (cardIds: number[]) => void
 }
@@ -19,8 +19,7 @@ const countElements = (elements: number[]):  Map<number, number> => {
 
 export const useDeckStore = create<I_State>((set) => {
     return {
-        mainDeck: new Map(),
-        loadedCardInfo: [],
+        mainDeck: new Map<number, number>(),
         addCardToMainDeck: (cardId: number, limit = CardLimit.UNLIMITED ) => set((state) => {
             const updatedDeck = new Map(state.mainDeck)
             updatedDeck.set(cardId, Math.min(updatedDeck.get(cardId) ?? 1, limit))
@@ -47,6 +46,7 @@ export const useDeckStore = create<I_State>((set) => {
         }),
         replaceMainDeck: (cardIds: number[]) => set((state) => {
             const newDeck = countElements(cardIds)
+            console.log(newDeck)
             return {
                 ...state,
                 mainDeckIds: newDeck
