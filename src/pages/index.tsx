@@ -6,6 +6,8 @@ import { useQueries, useQuery, useQueryClient } from "react-query";
 import { CardInfo, YGOCardInfoResponseSchema } from "~/types";
 import {useDeckStore} from "~/store";
 import {main} from "@popperjs/core";
+import {queryKeyFactory} from "~/utils";
+import DeckView from "~/components/DeckView";
 
 const createPlaceHolderCardInfoResponse = (): CardInfo[] => {
   return [];
@@ -23,14 +25,11 @@ const getCardInfo = async (cardIds?: number[]) => {
   return responseData.data;
 };
 
-const queryKeyFactory = {
-  cardInfo: (cardId: number) => ["cardInfo", cardId],
-};
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const queryClient = useQueryClient();
-  const mainDeckIds = useDeckStore((state) => state.mainDeckIds);
+  const mainDeck = useDeckStore((state) => state.mainDeck);
   const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck)
   const xdd = queryClient.getQueryData<CardInfo[]>(["cardInfo", 1]);
 
@@ -59,7 +58,7 @@ export default function Home() {
   }
 
   const mainDeckQueryResults = useQueries(
-    mainDeckIds.map((cardId) => {
+    Array.from(mainDeck).map(([cardId, count]) => {
       return {
         queryKey: queryKeyFactory.cardInfo(cardId),
         queryFn: () => getCardInfo([cardId]),
@@ -67,6 +66,8 @@ export default function Home() {
       };
     }),
   );
+  console.log("main window main deck", mainDeck)
+  console.log(mainDeckQueryResults.map((mdqr) => mdqr.data))
 
 
   return (
@@ -99,6 +100,7 @@ export default function Home() {
             Parse YDKE
           </button>
         </div>
+        <DeckView />
       </main>
     </>
   );
