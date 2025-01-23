@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DialogBox from "~/components/Dialogbox";
 import { useDeckStore } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
@@ -36,6 +36,15 @@ const GroupView = () => {
   };
 
   console.log(groups.filter((group) => group.id === activeGroup));
+
+  useEffect(() => {
+    if (activeGroup === null) {
+      return;
+    }
+    setGroupNameProxy(
+      groups.find((group) => group.id === activeGroup)?.name ?? "",
+    );
+  }, [activeGroup, groups]);
 
   return (
     <>
