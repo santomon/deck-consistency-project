@@ -9,6 +9,7 @@ import { main } from "@popperjs/core";
 import { queryKeyFactory } from "~/utils";
 import DeckView from "~/components/DeckView";
 import { useCardInfos } from "~/queries";
+import GroupView from "~/components/GroupView";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
@@ -72,6 +73,7 @@ export default function Home() {
           </div>
           <div className={"flex flex-row justify-start gap-2"}>
             <DeckView />
+            <GroupView />
           </div>
         </div>
       </main>
