@@ -1,49 +1,55 @@
 import {createStore, create} from 'zustand';
+import {CardInfoSchema} from "~/types";
+import {CardLimit} from "~/constants";
 
 interface I_State {
-    mainDeckIds: number[]
-    addCardsToMainDeck: (cardIds: number[]) => void
+    mainDeck: Map<number, number>
+    addCardToMainDeck: (cardId: number[], limit: CardLimit) => void
+    removeCardFromMainDeck: (cardId: number) => void
     replaceMainDeck: (cardIds: number[]) => void
-    removeCardsFromMainDeck: (cardIds: number[]) => void
+}
+
+const countElements = (elements: number[]):  Map<number, number> => {
+    const countMap = new Map<number, number>();
+    for (const element of elements) {
+        countMap.set(element, (countMap.get(element) ?? 0) + 1);
+    }
+    return countMap;
 }
 
 export const useDeckStore = create<I_State>((set) => {
     return {
-        mainDeckIds: [],
-        addCardsToMainDeck: (cardIds: number[]) => set((state) => {
-            const toAdd = []
-            for (const cardId of cardIds) {
-                const nInMainDeck = state.mainDeckIds.filter((ci) => ci === cardId).length
-                const nInToAdd = toAdd.filter((ci) => ci === cardId).length
-                if (nInMainDeck + nInToAdd >= 3) {
-                    continue
-                }
-                toAdd.push(cardId)
-            }
+        mainDeck: new Map(),
+        loadedCardInfo: [],
+        addCardToMainDeck: (cardId: number, limit = CardLimit.UNLIMITED ) => set((state) => {
+            const updatedDeck = new Map(state.mainDeck)
+            updatedDeck.set(cardId, Math.min(updatedDeck.get(cardId) ?? 1, limit))
 
             return {
                 ...state,
-                mainDeckIds: [...state.mainDeckIds, ...toAdd]
+                mainDeck: updatedDeck
             }
         }),
-        removeCardsFromMainDeck: (cardIds: number[]) => set((state) => {
-            let newMainDeckIds = [...state.mainDeckIds]
-            for (const cardId of cardIds) {
-                const index = newMainDeckIds.findIndex((ci) => ci === cardId)
-                if (index === -1) {
-                    continue
-                }
-                newMainDeckIds = newMainDeckIds.filter((ci, i) => i !== index)
+        removeCardFromMainDeck: (cardId: number) => set((state) => {
+            const updatedDeck = new Map(state.mainDeck)
+            const currentValue = updatedDeck.get(cardId)
+            if (!currentValue) {
+                return state
+            } else if (currentValue <= 1) {
+                updatedDeck.delete(cardId)
+            } else {
+                updatedDeck.set(cardId, currentValue - 1)
             }
             return {
                 ...state,
-                mainDeckIds: newMainDeckIds
+                mainDeckIds: updatedDeck
             }
         }),
         replaceMainDeck: (cardIds: number[]) => set((state) => {
+            const newDeck = countElements(cardIds)
             return {
                 ...state,
-                mainDeckIds: cardIds
+                mainDeckIds: newDeck
             }
         }),
     }
