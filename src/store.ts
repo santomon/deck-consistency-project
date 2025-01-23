@@ -6,6 +6,7 @@ interface I_DeckState {
   mainDeck: Map<number, number>;
   groups: CardGroup[];
   createGroup: () => number;
+  removeGroup: (groupId: number) => void;
   changeGroupName: (groupId: number, newName: string) => void;
   addCardToGroup: (groupId: number, cardId: number) => void;
   removeCardFromGroup: (groupId: number, cardId: number) => void;
@@ -43,6 +44,13 @@ export const useDeckStore = create<I_DeckState>((set) => {
 
       return newId;
     },
+    removeGroup: (groupId: number) =>
+      set((state) => {
+        return {
+          ...state,
+          groups: state.groups.filter((group) => group.id !== groupId),
+        };
+      }),
     changeGroupName: (groupId: number, newName: string) =>
       set((state) => {
         return {
