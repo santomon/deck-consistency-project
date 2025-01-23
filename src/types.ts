@@ -52,9 +52,7 @@ const CardInfoSchema = z.object({
   typeline: z.array(z.string()).optional(),
   type: z.string(),
   humanReadableCardType: z.string(),
-  frameType: z.preprocess((val) => {
-    return FrameType[val as keyof typeof FrameType] || FrameType.EFFECT;
-  }, z.nativeEnum(FrameType)),
+  frameType: z.nativeEnum(FrameType),
   desc: z.string(),
   race: z.string().optional(),
   atk: z.number().optional(),

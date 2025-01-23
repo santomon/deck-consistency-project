@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "react-query";
 import {lookUpFrameTypeSortingKey, queryKeyFactory} from "~/utils";
 import { useDeckStore } from "~/store";
 import { useCardInfo } from "~/queries";
-import { CardInfo } from "~/types";
+import {CardInfo, FrameType} from "~/types";
 
 const frameTypeStyleLookup = {
   spell: {
@@ -39,9 +39,13 @@ const CardRow = ({ cardId }: { cardId: number }) => {
     );
   }
 
+  console.log("cardInfo", cardInfo);
+
+  const styleClassName = frameTypeStyleLookup?.[cardInfo?.frameType ?? "default"]?.cellBgColor ?? "";
+
   return (
     <tr>
-      <td>{cardInfo?.name}</td>
+      <td className={styleClassName}>{cardInfo?.name}</td>
       <td>{count}</td>
     </tr>
   );
@@ -68,7 +72,7 @@ const DeckView = ({}) => {
 
     const sortingKeyA = frameTypeA ? lookUpFrameTypeSortingKey(frameTypeA) : 0;
     const sortingKeyB = frameTypeB ? lookUpFrameTypeSortingKey(frameTypeB) : 0;
-    const T =  sortingKeyA - sortingKeyB;
+    const T =  - sortingKeyA + sortingKeyB;
     if (T !== 0) {
       return T;
     }
