@@ -54,8 +54,8 @@ export default function Home() {
         <meta name="description" content="Deck Consistency Simulation" />
         {/*<link rel="icon" href="/favicon.ico" />*/}
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-start bg-teal-700">
-        <div className="flex flex-col items-center p-4">
+      <main className="flex min-h-screen flex-col justify-start bg-teal-700">
+        <div className="flex flex-col p-4 gap-2">
           <div className={"flex flex-row items-center gap-2"}>
             <input
                 id="textInput"
@@ -72,8 +72,11 @@ export default function Home() {
               Parse YDKE
             </button>
           </div>
+          <div className={"flex flex-row justify-start gap-2 p-5"}>
+            <DeckView />
+
+          </div>
         </div>
-        <DeckView />
       </main>
     </>
   );

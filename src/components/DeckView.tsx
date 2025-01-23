@@ -45,8 +45,8 @@ const CardRow = ({ cardId }: { cardId: number }) => {
 
   return (
     <tr className={""}>
-      <td className={`${styleClassName} border border-black flex-grow`}>{cardInfo?.name}</td>
-      <td className={`${styleClassName} border border-black flex-grow`}>{count}</td>
+      <td className={`${styleClassName} border border-black pl-4`}>{cardInfo?.name}</td>
+      <td className={`${styleClassName} border border-black text-center`}>{count}</td>
     </tr>
   );
 };
