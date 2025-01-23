@@ -4,9 +4,9 @@ import * as ydke from "ydke";
 import { ChangeEvent, useState } from "react";
 import { useQueries, useQuery, useQueryClient } from "react-query";
 import { CardInfo, YGOCardInfoResponseSchema } from "~/types";
-import {useDeckStore} from "~/store";
-import {main} from "@popperjs/core";
-import {queryKeyFactory} from "~/utils";
+import { useDeckStore } from "~/store";
+import { main } from "@popperjs/core";
+import { queryKeyFactory } from "~/utils";
 import DeckView from "~/components/DeckView";
 import { useCardInfos } from "~/queries";
 
@@ -14,13 +14,12 @@ export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const queryClient = useQueryClient();
   const mainDeck = useDeckStore((state) => state.mainDeck);
-  const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck)
+  const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck);
   const xdd = queryClient.getQueryData<CardInfo[]>(["cardInfo", 1]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value); // Update state
   };
-
 
   const handleYDKEButtonSubmitted = () => {
     let ydkeResult;
@@ -38,14 +37,13 @@ export default function Home() {
         side: new Array<number>(),
       };
     }
-    replaceMainDeck(ydkeResult.main)
+    replaceMainDeck(ydkeResult.main);
     setInputValue("");
-  }
+  };
 
   const mainDeckQueryResults = useCardInfos();
-  console.log("main window main deck", mainDeck)
-  console.log(mainDeckQueryResults.map((mdqr) => mdqr.data))
-
+  console.log("main window main deck", mainDeck);
+  console.log(mainDeckQueryResults.map((mdqr) => mdqr.data));
 
   return (
     <>
@@ -58,23 +56,22 @@ export default function Home() {
         <div className="flex flex-col gap-5">
           <div className={"flex flex-row items-center gap-2"}>
             <input
-                id="textInput"
-                type="text"
-                value={inputValue}
-                onChange={handleChange}
-                placeholder="Type something..."
-                className="w-80 rounded-md border border-gray-300 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              id="textInput"
+              type="text"
+              value={inputValue}
+              onChange={handleChange}
+              placeholder="Type something..."
+              className="w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
-                onClick={handleYDKEButtonSubmitted}
-                className="p-2 bg-blue-500 text-white rounded-md shadow-sm"
+              onClick={handleYDKEButtonSubmitted}
+              className="rounded-md bg-blue-500 p-2 text-white shadow-sm"
             >
               Parse YDKE
             </button>
           </div>
-          <div className={"flex flex-row justify-start gap-2 "}>
+          <div className={"flex flex-row justify-start gap-2"}>
             <DeckView />
-
           </div>
         </div>
       </main>
