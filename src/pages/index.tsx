@@ -55,6 +55,7 @@ export default function Home() {
       };
     }
     replaceMainDeck(ydkeResult.main)
+    setInputValue("");
   }
 
   const mainDeckQueryResults = useQueries(
