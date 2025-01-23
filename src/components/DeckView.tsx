@@ -39,8 +39,6 @@ const CardRow = ({ cardId }: { cardId: number }) => {
     );
   }
 
-  console.log("cardInfo", cardInfo);
-
   const styleClassName =
     frameTypeStyleLookup?.[cardInfo?.frameType ?? "default"]?.cellBgColor ?? "";
 
