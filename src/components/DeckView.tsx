@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "react-query";
-import { lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
+import {lookUpFrameTypeSortingKey, queryKeyFactory} from "~/utils";
 import { useDeckStore } from "~/store";
 import { useCardInfo } from "~/queries";
 import { CardInfo } from "~/types";
@@ -41,7 +41,7 @@ const CardRow = ({ cardId }: { cardId: number }) => {
 
   return (
     <tr>
-      <td>{cardInfo?.[0]?.name}</td>
+      <td>{cardInfo?.name}</td>
       <td>{count}</td>
     </tr>
   );
@@ -49,19 +49,32 @@ const CardRow = ({ cardId }: { cardId: number }) => {
 
 const DeckView = ({}) => {
   const queryClient = useQueryClient();
+
   const mainDeck = useDeckStore((state) => state.mainDeck);
 
-  const sortIDFunction = (a: number, b: number) => {
-    const frameTypeA = queryClient.getQueryData<CardInfo>(
+  const sortIDFunction = (a: number, b: number)  => {
+    const cardInfoA = queryClient.getQueryData<CardInfo>(
       queryKeyFactory.cardInfo(a),
-    )?.frameType;
-    const frameTypeB = queryClient.getQueryData<CardInfo>(
+    );
+    const cardInfoB = queryClient.getQueryData<CardInfo>(
       queryKeyFactory.cardInfo(b),
-    )?.frameType;
+    );
+
+    if (!cardInfoA || !cardInfoB) {
+      return 0;
+    }
+    const frameTypeA = cardInfoA.frameType;
+    const frameTypeB = cardInfoB.frameType;
 
     const sortingKeyA = frameTypeA ? lookUpFrameTypeSortingKey(frameTypeA) : 0;
     const sortingKeyB = frameTypeB ? lookUpFrameTypeSortingKey(frameTypeB) : 0;
-    return sortingKeyA - sortingKeyB;
+    const T =  sortingKeyA - sortingKeyB;
+    if (T !== 0) {
+      return T;
+    }
+    const cardNameA = cardInfoA.name;
+    const cardNameB = cardInfoB.name;
+    return cardNameA.localeCompare(cardNameB);
   };
 
   return (

@@ -23,11 +23,11 @@ export const getCardInfo = async (cardIds?: number[]) => {
 
 
 export const lookUpFrameTypeSortingKey = (frameType: string) => {
-  if (frameType === FrameType.EFFECT) {
+  if (frameType as FrameType === FrameType.EFFECT) {
     return 4;
-  } else if (frameType === FrameType.NORMAL) {
+  } else if (frameType as FrameType === FrameType.NORMAL) {
     return 1;
-  } else if (frameType === FrameType.SPELL) {
+  } else if (frameType as FrameType === FrameType.SPELL) {
     return 0;
   } else {
     return 2;

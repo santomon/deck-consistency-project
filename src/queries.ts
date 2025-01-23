@@ -6,10 +6,10 @@ export const useCardInfo = (cardId: number) => {
     const mainDeck = useDeckStore((state) => state.mainDeck);
     return useQuery(
         queryKeyFactory.cardInfo(cardId),
-        () => getCardInfo([cardId]),
-        {
-            initialData: [],
-        }
+        async () => {
+            const cards = await getCardInfo([cardId])
+            return cards[0]
+        },
     )
 }
 
@@ -20,8 +20,10 @@ export const useCardInfos = () => {
         Array.from(mainDeck).map(([cardId, count]) => {
             return {
                 queryKey: queryKeyFactory.cardInfo(cardId),
-                queryFn: () => getCardInfo([cardId]),
-                initialData: [],
+                queryFn: async () => {
+                    const cards = await getCardInfo([cardId])
+                    return cards[0]
+                },
             };
         }),
     )
