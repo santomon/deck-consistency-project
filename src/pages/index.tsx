@@ -54,8 +54,8 @@ export default function Home() {
         <meta name="description" content="Deck Consistency Simulation" />
         {/*<link rel="icon" href="/favicon.ico" />*/}
       </Head>
-      <main className="flex min-h-screen flex-col justify-start bg-teal-700">
-        <div className="flex flex-col p-4 gap-2">
+      <main className="flex min-h-screen flex-col justify-start bg-teal-700 p-5">
+        <div className="flex flex-col gap-5">
           <div className={"flex flex-row items-center gap-2"}>
             <input
                 id="textInput"
@@ -63,7 +63,7 @@ export default function Home() {
                 value={inputValue}
                 onChange={handleChange}
                 placeholder="Type something..."
-                className="w-80 rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-80 rounded-md border border-gray-300 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
                 onClick={handleYDKEButtonSubmitted}
@@ -72,7 +72,7 @@ export default function Home() {
               Parse YDKE
             </button>
           </div>
-          <div className={"flex flex-row justify-start gap-2 p-5"}>
+          <div className={"flex flex-row justify-start gap-2 "}>
             <DeckView />
 
           </div>
