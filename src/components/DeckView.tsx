@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from "react-query";
-import {lookUpFrameTypeSortingKey, queryKeyFactory} from "~/utils";
+import { lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
 import { useDeckStore } from "~/store";
 import { useCardInfo } from "~/queries";
-import {CardInfo, FrameType} from "~/types";
+import { CardInfo, FrameType } from "~/types";
 
 const frameTypeStyleLookup = {
   spell: {
@@ -41,12 +41,17 @@ const CardRow = ({ cardId }: { cardId: number }) => {
 
   console.log("cardInfo", cardInfo);
 
-  const styleClassName = frameTypeStyleLookup?.[cardInfo?.frameType ?? "default"]?.cellBgColor ?? "";
+  const styleClassName =
+    frameTypeStyleLookup?.[cardInfo?.frameType ?? "default"]?.cellBgColor ?? "";
 
   return (
     <tr className={""}>
-      <td className={`${styleClassName} border border-black pl-4`}>{cardInfo?.name}</td>
-      <td className={`${styleClassName} border border-black text-center`}>{count}</td>
+      <td className={`${styleClassName} border border-black px-4`}>
+        {cardInfo?.name}
+      </td>
+      <td className={`${styleClassName} border border-black text-center`}>
+        {count}
+      </td>
     </tr>
   );
 };
@@ -56,7 +61,7 @@ const DeckView = ({}) => {
 
   const mainDeck = useDeckStore((state) => state.mainDeck);
 
-  const sortIDFunction = (a: number, b: number)  => {
+  const sortIDFunction = (a: number, b: number) => {
     const cardInfoA = queryClient.getQueryData<CardInfo>(
       queryKeyFactory.cardInfo(a),
     );
@@ -72,7 +77,7 @@ const DeckView = ({}) => {
 
     const sortingKeyA = frameTypeA ? lookUpFrameTypeSortingKey(frameTypeA) : 0;
     const sortingKeyB = frameTypeB ? lookUpFrameTypeSortingKey(frameTypeB) : 0;
-    const T =  - sortingKeyA + sortingKeyB;
+    const T = -sortingKeyA + sortingKeyB;
     if (T !== 0) {
       return T;
     }
