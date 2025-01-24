@@ -9,6 +9,9 @@ export enum FrameType {
   //...
 }
 
+const CardIdSchema = z.number();
+export type CardId = z.infer<typeof CardIdSchema>;
+
 // CardSet schema
 // define the structure of the card sets
 const CardSetSchema = z.object({
