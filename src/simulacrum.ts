@@ -141,3 +141,10 @@ const naiveGetRandomIntegersWithoutReplacement = (k: number, max: number) => {
   }
   return result;
 };
+
+export {
+  handIncludesGroup,
+  handIncludesCombo,
+  evaluateCondition,
+  evaluateHand,
+};

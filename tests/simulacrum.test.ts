@@ -4,7 +4,9 @@ import {
   CardEnvironment,
   Combo,
   ComboPiece,
+  evaluateHand,
   HandCondition,
+  handIncludesCombo,
 } from "~/simulacrum";
 
 const spreadOutDeck = [
@@ -70,6 +72,48 @@ const environmentSimple: CardEnvironment = {
   combos,
 };
 
-test("handIncludesCombo", () => {
-  expect(2 + 2).toBe(4);
+test("handIncludesCombo1", () => {
+  const hand = [1, 10];
+  expect(handIncludesCombo(hand, 1, environmentSimple)).toBe(true);
+});
+
+test("handIncludesCombo2", () => {
+  const hand = [1, 10, 400];
+  expect(handIncludesCombo(hand, 1, environmentSimple)).toBe(true);
+});
+
+test("handIncludesCombo3", () => {
+  const hand = [2, 11, 1001];
+  expect(handIncludesCombo(hand, 1, environmentSimple)).toBe(true);
+});
+
+test("handDoesNotIncludeCombo4", () => {
+  const hand = [11, 2];
+  expect(handIncludesCombo(hand, 1, environmentSimple)).toBe(true);
+});
+
+test("handDoesNotIncludeCombo1", () => {
+  const hand = [1, 1];
+  expect(handIncludesCombo(hand, 1, environmentSimple)).toBe(false);
+});
+
+test("evaluateHands1", () => {
+  const hand = [1, 1, 2];
+  expect(evaluateHand(hand, sampleHandCondition1, environmentSimple)).toBe(
+    false,
+  );
+});
+
+test("evaluateHands2", () => {
+  const hand = [1, 10, 2];
+  expect(evaluateHand(hand, sampleHandCondition1, environmentSimple)).toBe(
+    true,
+  );
+});
+
+test("evaluateHands3", () => {
+  const hand = [1, 10, 400];
+  expect(evaluateHand(hand, sampleHandCondition1, environmentSimple)).toBe(
+    false,
+  );
 });
