@@ -1,87 +1,35 @@
 import { CardId, CardInfo } from "~/types";
 import { CardGroup } from "~/types";
 
-const spreadOutDeck = [
-  1, 1, 2, 10, 10, 11, 400, 1000, 1000, 1001, 1002, 1003, 1004, 1005, 1006,
-];
-
-const cardGroups: CardGroup[] = [
-  {
-    id: 1,
-    name: "Combo Piece 1",
-    cardIds: [1, 2],
-  },
-  {
-    id: 2,
-    name: "Combo Piece 2",
-    cardIds: [10, 11],
-  },
-  {
-    id: 3,
-    name: "Bricks",
-    cardIds: [400],
-  },
-];
-
-const allComboPieces: ComboPiece[] = [
-  {
-    id: 1,
-    foreignId: 1,
-    type: "group",
-  },
-  {
-    id: 2,
-    foreignId: 2,
-    type: "group",
-  },
-];
-
-const combos: Combo[] = [
-  {
-    id: 1,
-    comboPieceIds: [1, 2],
-    numberRequired: 2,
-  },
-];
-
-interface ComboPiece {
+export interface ComboPiece {
   id: number;
   foreignId: number;
   type: "card" | "group";
 }
 
-type ComboId = number;
-type GroupId = number;
+export type ComboId = number;
+export type GroupId = number;
 
-interface Combo {
+export interface Combo {
   id: ComboId;
   comboPieceIds: number[];
   numberRequired: number;
 }
-interface Condition {
+export interface Condition {
   foreignId: number;
   type: "card" | "group" | "combo";
 }
 
-interface HandCondition {
+export interface HandCondition {
   shouldIncludeAtLeastOneOf: Condition[];
   mustNotInclude: Condition[];
 }
 
-const sampleHandCondition: HandCondition = {
-  shouldIncludeAtLeastOneOf: [
-    {
-      foreignId: 1,
-      type: "combo",
-    },
-  ],
-  mustNotInclude: [
-    {
-      foreignId: 3,
-      type: "group",
-    },
-  ],
-};
+export interface CardEnvironment {
+  cardGroups: CardGroup[];
+  comboPieces: ComboPiece[];
+  combos: Combo[];
+}
 
 const simulateHand = (spreadOutDeck: CardId[], handSize: number) => {
   const indices = naiveGetRandomIntegersWithoutReplacement(
@@ -91,31 +39,52 @@ const simulateHand = (spreadOutDeck: CardId[], handSize: number) => {
   return spreadOutDeck.filter((_, index) => indices.includes(index));
 };
 
-const evaluateHand = (hand: CardId[], handCondition: HandCondition) => {
+const evaluateHand = (
+  hand: CardId[],
+  handCondition: HandCondition,
+  environment: CardEnvironment,
+) => {
   if (handCondition.shouldIncludeAtLeastOneOf.length === 0) {
     return false;
   }
   if (
     handCondition.mustNotInclude.some((condition) =>
-      evaluateCondition(hand, condition),
+      evaluateCondition(hand, condition, environment),
     )
   ) {
     return false;
   }
   return handCondition.shouldIncludeAtLeastOneOf.some((condition) =>
-    evaluateCondition(hand, condition),
+    evaluateCondition(hand, condition, environment),
   );
 };
 
-const handIncludesGroup = (hand: CardId[], groupId: GroupId) => {
-  const group = cardGroups.find((group) => group.id === groupId);
+const handIncludesGroup = (
+  hand: CardId[],
+  groupId: GroupId,
+  environment: CardEnvironment,
+) => {
+  const group = environment.cardGroups.find((group) => group.id === groupId);
   if (!group) {
     return false;
   }
   return group.cardIds.some((cardId) => hand.includes(cardId));
 };
 
-const handIncludesCombo = (hand: CardId[], combo: Combo) => {
+const handIncludesCombo = (
+  hand: CardId[],
+  comboId: ComboId,
+  environment: CardEnvironment,
+) => {
+  const {
+    cardGroups: allCardGroups,
+    comboPieces: allComboPieces,
+    combos: allCombos,
+  } = environment;
+  const combo = allCombos.find((combo) => combo.id === comboId);
+  if (!combo) {
+    throw new Error("Invalid combo id");
+  }
   const comboPieces = combo.comboPieceIds.map((comboPieceId) => {
     const comboPiece = allComboPieces.find(
       (comboPiece) => comboPiece.id === comboPieceId,
@@ -130,7 +99,7 @@ const handIncludesCombo = (hand: CardId[], combo: Combo) => {
       case "card":
         return hand.includes(comboPiece.foreignId);
       case "group":
-        return handIncludesGroup(hand, comboPiece.foreignId);
+        return handIncludesGroup(hand, comboPiece.foreignId, environment);
       default:
         throw new Error("Invalid combo piece type");
     }
@@ -138,14 +107,18 @@ const handIncludesCombo = (hand: CardId[], combo: Combo) => {
   return successes.filter((success) => success).length >= combo.numberRequired;
 };
 
-const evaluateCondition = (hand: CardId[], condition: Condition) => {
+const evaluateCondition = (
+  hand: CardId[],
+  condition: Condition,
+  environment: CardEnvironment,
+) => {
   switch (condition.type) {
     case "card":
       return hand.includes(condition.foreignId);
     case "group":
-      return handIncludesGroup(hand, condition.foreignId);
+      return handIncludesGroup(hand, condition.foreignId, environment);
     case "combo":
-      return handIncludesGroup(hand, condition.foreignId);
+      return handIncludesCombo(hand, condition.foreignId, environment);
     default:
       throw new Error("Invalid condition type");
   }
@@ -168,14 +141,3 @@ const naiveGetRandomIntegersWithoutReplacement = (k: number, max: number) => {
   }
   return result;
 };
-
-const timeStart = Date.now();
-for (let i = 0; i < 10; i++) {
-  const hand = naiveGetRandomIntegersWithoutReplacement(5, 40);
-  const wasSuccessful = evaluateHand(hand, sampleHandCondition);
-  const groupWasSuccessful = handIncludesGroup(hand, 2);
-  console.log(`hand: ${hand.toString()}, group 2: ${groupWasSuccessful}`);
-  console.log(`hand: ${hand.toString()}, wasSuccessful: ${wasSuccessful}`);
-}
-const timeEnd = Date.now();
-console.log("time elapsed (ms): ", timeEnd - timeStart);
