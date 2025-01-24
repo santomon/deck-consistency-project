@@ -14,6 +14,7 @@ import GroupView from "~/components/GroupView";
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const queryClient = useQueryClient();
+  const mainDeckQueryResults = useCardInfos();
   const mainDeck = useDeckStore((state) => state.mainDeck);
   const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck);
   const xdd = queryClient.getQueryData<CardInfo[]>(["cardInfo", 1]);
@@ -41,10 +42,6 @@ export default function Home() {
     replaceMainDeck(ydkeResult.main);
     setInputValue("");
   };
-
-  const mainDeckQueryResults = useCardInfos();
-  console.log("main window main deck", mainDeck);
-  console.log(mainDeckQueryResults.map((mdqr) => mdqr.data));
 
   return (
     <>
