@@ -1,37 +1,46 @@
-import {CardInfo, FrameType, YGOCardInfoResponseSchema} from "~/types";
+import { CardInfo, FrameType, YGOCardInfoResponseSchema } from "~/types";
+import { QueryClient } from "react-query";
 
 export const queryKeyFactory = {
-    cardInfo: (cardId: number) => ["cardInfo", cardId],
-
+  cardInfo: (cardId: number) => ["cardInfo", cardId],
 };
 
 const createPlaceHolderCardInfoResponse = (): CardInfo[] => {
-    return [];
+  return [];
 };
 
 export const getCardInfo = async (cardIds?: number[]) => {
-    const commaSeparatedIds = cardIds?.join(",");
-    if (!commaSeparatedIds) {
-        return createPlaceHolderCardInfoResponse();
-    }
-    const response = await fetch(
-        `${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`,
-    );
-    const responseData = YGOCardInfoResponseSchema.parse(await response.json());
-    return responseData.data;
+  const commaSeparatedIds = cardIds?.join(",");
+  if (!commaSeparatedIds) {
+    return createPlaceHolderCardInfoResponse();
+  }
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`,
+  );
+  const responseData = YGOCardInfoResponseSchema.parse(await response.json());
+  return responseData.data;
 };
 
+export const retrieveCardInfoInternal = (
+  cardId: number,
+  queryClient: QueryClient,
+) => {
+  const cardInfo = queryClient.getQueryData<CardInfo>(
+    queryKeyFactory.cardInfo(cardId),
+  );
+  return cardInfo;
+};
 
 export const lookUpFrameTypeSortingKey = (frameType: string) => {
-  if (frameType as FrameType === FrameType.EFFECT) {
+  if ((frameType as FrameType) === FrameType.EFFECT) {
     return 4;
-  } else if (frameType as FrameType === FrameType.NORMAL) {
+  } else if ((frameType as FrameType) === FrameType.NORMAL) {
     return 1;
-  } else if (frameType as FrameType === FrameType.SPELL) {
+  } else if ((frameType as FrameType) === FrameType.SPELL) {
     return 0;
-  } else if (frameType as FrameType === FrameType.TRAP) {
-      return - 1;
+  } else if ((frameType as FrameType) === FrameType.TRAP) {
+    return -1;
   } else {
     return 2;
   }
-}
+};
