@@ -119,9 +119,6 @@ const GroupView = () => {
   );
   const addCardToGroup = useDeckStore((state) => state.addCardToGroup);
   const changeGroupName = useDeckStore((state) => state.changeGroupName);
-  const replaceCardsInGroup = useDeckStore(
-    (state) => state.replaceCardsInGroup,
-  );
   const debouncedGroupNameChange = useDebouncedCallback(
     ({ groupId, value }: { groupId: number; value: string }) => {
       changeGroupName(groupId, value);
@@ -257,6 +254,14 @@ const GroupView = () => {
                       .join(", ")}
                   </p>
                 </div>
+                <button
+                  onClick={() => {
+                    setActiveGroupId(group.id);
+                    setCreateGroupDialogBoxIsOpen(true);
+                  }}
+                >
+                  Edit
+                </button>
                 <button
                   onClick={() => {
                     removeGroup(group.id);
