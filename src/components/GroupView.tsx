@@ -10,21 +10,38 @@ import {
   retrieveCardInfoInternal,
 } from "~/utils";
 
+interface ChipSSFProps {
+  label: string;
+  onDelete: () => void;
+}
+
+const ChipSSF = ({ label, onDelete }: ChipSSFProps) => {
+  return (
+    <div className="flex flex-row items-center justify-end rounded-full bg-blue-500 px-3 py-1 text-white">
+      {label}
+      <button className={"bg-red-500"} onClick={onDelete}>
+        x
+      </button>
+    </div>
+  );
+};
+
 interface AutoSelectProps<T> {
   options: T[];
+  selectedOptions: T[];
   getOptionsKey: (option: T) => string;
   getOptionsLabel: (option: T) => string;
-  handleSelectedOptionsChanged: (selectedOptions: T[]) => void;
+  handleOnSelect: (selectedOption: T) => void;
 }
 
 const AutoSelect = <T,>({
   options,
+  selectedOptions,
   getOptionsKey,
   getOptionsLabel,
-  handleSelectedOptionsChanged,
+  handleOnSelect,
 }: AutoSelectProps<T>) => {
   const [searchFilter, setSearchFilter] = useState("");
-  const [selectedOptions, setSelectedOptions] = useState<T[]>([]);
   const [isDropdownVisible, setDropdownVisible] = useState(false);
 
   const searchFilterPredicate = (_option: T) => {
@@ -48,9 +65,7 @@ const AutoSelect = <T,>({
   const handleOptionSelect = (option: T) => {
     setSearchFilter("");
     setDropdownVisible(false);
-    const newSelectedOptions = [...selectedOptions, option];
-    setSelectedOptions(newSelectedOptions);
-    handleSelectedOptionsChanged(newSelectedOptions);
+    handleOnSelect(option);
   };
 
   return (
@@ -92,13 +107,17 @@ const AutoSelect = <T,>({
 const GroupView = () => {
   const [createGroupDialogBoxIsOpen, setCreateGroupDialogBoxIsOpen] =
     useState(false);
-  const [activeGroup, setActiveGroup] = useState<number | null>(null);
+  const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [groupNameProxy, setGroupNameProxy] = useState("");
   const queryClient = useQueryClient();
   const mainDeck = useDeckStore((state) => state.mainDeck);
   const groups = useDeckStore((state) => state.groups);
   const createGroup = useDeckStore((state) => state.createGroup);
   const removeGroup = useDeckStore((state) => state.removeGroup);
+  const removeCardFromGroup = useDeckStore(
+    (state) => state.removeCardFromGroup,
+  );
+  const addCardToGroup = useDeckStore((state) => state.addCardToGroup);
   const changeGroupName = useDeckStore((state) => state.changeGroupName);
   const replaceCardsInGroup = useDeckStore(
     (state) => state.replaceCardsInGroup,
@@ -111,18 +130,15 @@ const GroupView = () => {
   );
   const handleCreateGroup = () => {
     const newGroupId = createGroup();
-    setActiveGroup(newGroupId);
+    setActiveGroupId(newGroupId);
     setCreateGroupDialogBoxIsOpen(true);
   };
 
-  const handleSelectedOptionsChanged = (selectedOptions: CardInfo[]) => {
-    if (activeGroup === null) {
+  const handleOptionSelected = (selectedCard: CardInfo) => {
+    if (activeGroupId === null) {
       return;
     }
-    replaceCardsInGroup(
-      activeGroup,
-      selectedOptions.map((option) => option.id),
-    );
+    addCardToGroup(activeGroupId, selectedCard.id);
   };
 
   const getIdFromCard = (card: CardInfo) => {
@@ -144,21 +160,28 @@ const GroupView = () => {
     debouncedGroupNameChange({ groupId, value });
   };
 
-  console.log(groups.filter((group) => group.id === activeGroup));
-
   useEffect(() => {
-    if (activeGroup === null) {
+    if (activeGroupId === null) {
       return;
     }
     setGroupNameProxy(
-      groups.find((group) => group.id === activeGroup)?.name ?? "",
+      groups.find((group) => group.id === activeGroupId)?.name ?? "",
     );
-  }, [activeGroup, groups]);
+  }, [activeGroupId, groups]);
 
   const cardInfos = Array.from(mainDeck).map(([cardId, count]) => {
     const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
     return cardInfo;
   });
+
+  const activeGroup = groups.find((group) => group.id === activeGroupId);
+  const activeGroupCardInfos = cardInfos
+    .filter((cardInfo) => {
+      return !!cardInfo;
+    })
+    .filter((cardInfo) => {
+      return !!activeGroup && activeGroup.cardIds.includes(cardInfo.id);
+    });
 
   return (
     <>
@@ -166,7 +189,7 @@ const GroupView = () => {
         isOpen={createGroupDialogBoxIsOpen}
         onClose={() => {
           setCreateGroupDialogBoxIsOpen(false);
-          setActiveGroup(null);
+          setActiveGroupId(null);
           setGroupNameProxy("");
         }}
       >
@@ -176,17 +199,40 @@ const GroupView = () => {
           type="text"
           value={groupNameProxy}
           onChange={(e) =>
-            handleDebounceGroupNameChange(activeGroup, e.target.value)
+            handleDebounceGroupNameChange(activeGroupId, e.target.value)
           }
           placeholder="Type something..."
           className="w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <AutoSelect
           options={cardInfos.filter((cardInfo) => !!cardInfo)}
+          selectedOptions={activeGroupCardInfos}
           getOptionsKey={getIdFromCard}
           getOptionsLabel={getNameFromCard}
-          handleSelectedOptionsChanged={handleSelectedOptionsChanged}
+          handleOnSelect={handleOptionSelected}
         />
+        <div className={"rounded bg-gray-500"}>
+          {groups
+            .find((group) => group.id === activeGroupId)
+            ?.cardIds.map((cardId) => {
+              const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
+              if (!cardInfo) {
+                return null;
+              }
+              return (
+                <ChipSSF
+                  key={cardId}
+                  label={cardInfo?.name}
+                  onDelete={() => {
+                    if (activeGroupId === null) {
+                      return;
+                    }
+                    removeCardFromGroup(activeGroupId, cardId);
+                  }}
+                />
+              );
+            })}
+        </div>
       </DialogBox>
       <div>
         <h1>Group View</h1>
