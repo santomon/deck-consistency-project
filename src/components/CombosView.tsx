@@ -38,6 +38,10 @@ const CombosView = () => {
     },
     500,
   );
+  const changeNumberRequiredForCombo = useDeckStore(
+    (state) => state.changeNumberRequiredForCombo,
+  );
+
   const handleCreateCombo = () => {
     const newComboId = createCombo();
     setActiveComboId(newComboId);
@@ -143,6 +147,21 @@ const CombosView = () => {
           getOptionsLabel={getNameFromComboPiece}
           handleOnSelect={handleOptionSelected}
         />
+        <input
+          value={activeCombo?.numberRequired}
+          className={
+            "w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          }
+          onChange={(e) => {
+            if (activeComboId === null || isNaN(parseInt(e.target.value))) {
+              return;
+            }
+            changeNumberRequiredForCombo(
+              activeComboId,
+              parseInt(e.target.value),
+            );
+          }}
+        />
         <div className={"rounded bg-gray-500"}>
           {combos
             .find((combo) => combo.id === activeComboId)
@@ -182,6 +201,7 @@ const CombosView = () => {
                       .join(", ")}
                   </p>
                 </div>
+                Number required: {combo.numberRequired}
                 <button
                   onClick={() => {
                     setActiveComboId(combo.id);
