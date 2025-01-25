@@ -3,6 +3,7 @@ import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
 import { CardLimit } from "~/constants";
 import { QueryClient } from "react-query";
 import { GroupId } from "./simulacrum";
+import { queryKeyFactory } from "~/utils";
 
 interface I_DeckState {
   mainDeck: CardId[];
@@ -15,13 +16,17 @@ interface I_DeckState {
   replaceCardsInGroup: (groupId: number, cards: string[]) => void;
   addCardToGroup: (groupId: number, card: string) => void;
   removeCardFromGroup: (groupId: number, card: string) => void;
-  addCardToMainDeck: (cardId: number, limit: CardLimit) => void;
+  addCardToMainDeck: (
+    cardId: number,
+    queryClient: QueryClient,
+    limit: CardLimit,
+  ) => void;
   removeCardFromMainDeck: (cardId: number) => void;
   replaceMainDeck: (cardIds: number[]) => void;
 }
 
-const countElements = (elements: number[]): Map<number, number> => {
-  const countMap = new Map<number, number>();
+const countElements = <T>(elements: T[]) => {
+  const countMap = new Map<T, number>();
   for (const element of elements) {
     countMap.set(element, (countMap.get(element) ?? 0) + 1);
   }
@@ -139,13 +144,21 @@ export const useDeckStore = create<I_DeckState>((set) => {
           groups: updatedGroups,
         };
       }),
-    addCardToMainDeck: (cardId: number, limit = CardLimit.UNLIMITED) =>
+    addCardToMainDeck: (
+      cardId: number,
+      queryClient: QueryClient,
+      limit = CardLimit.UNLIMITED,
+    ) =>
       set((state) => {
         const updatedDeck = [...state.mainDeck];
         const numberInDeck = state.mainDeck.filter((ci) => {
           if (ci === cardId) return true;
-          const cn = state.cardInfoRegister.get(ci)?.name;
-          const cardName = state.cardInfoRegister.get(cardId)?.name;
+          const cn = queryClient.getQueryData<CardInfo>(
+            queryKeyFactory.cardInfo(ci),
+          )?.name;
+          const cardName = queryClient.getQueryData<CardInfo>(
+            queryKeyFactory.cardInfo(cardId),
+          )?.name;
           return cn === cardName;
         }).length;
 

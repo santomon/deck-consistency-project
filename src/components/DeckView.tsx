@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "react-query";
-import { lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
+import { groupBy, lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
 import { useDeckStore } from "~/store";
 import { useCardInfo } from "~/queries";
 import { CardInfo, FrameType } from "~/types";
@@ -44,26 +44,22 @@ const frameTypeStyleLookup = {
   },
 };
 
-const CardRow = ({ cardId }: { cardId: number }) => {
-  const { data: cardInfo, isSuccess, isLoading } = useCardInfo(cardId);
-  const mainDeck = useDeckStore((state) => state.mainDeck);
-  const count = mainDeck.get(cardId) ?? 0;
-
-  if (isLoading) {
-    return (
-      <tr>
-        <td>Loading...</td>
-      </tr>
-    );
-  }
-
+const CardRow = ({
+  cardName,
+  count,
+  frameType,
+}: {
+  cardName: string;
+  count: number;
+  frameType: FrameType;
+}) => {
   const styleClassName =
-    frameTypeStyleLookup?.[cardInfo?.frameType ?? "default"]?.cellBgColor ?? "";
+    frameTypeStyleLookup?.[frameType ?? "default"]?.cellBgColor ?? "";
 
   return (
     <tr className={""}>
       <td className={`${styleClassName} border border-black px-4`}>
-        {cardInfo?.name}
+        {cardName}
       </td>
       <td className={`${styleClassName} border border-black text-center`}>
         {count}
@@ -76,6 +72,18 @@ const DeckView = ({}) => {
   const queryClient = useQueryClient();
 
   const mainDeck = useDeckStore((state) => state.mainDeck);
+  const loadedCardInfos = mainDeck
+    .map((cardId) => {
+      const cardInfo = queryClient.getQueryData<CardInfo>(
+        queryKeyFactory.cardInfo(cardId),
+      );
+      return cardInfo;
+    })
+    .filter((cardInfo) => !!cardInfo);
+
+  const cardNameInfos = groupBy(loadedCardInfos, (info) => {
+    return info.name;
+  });
 
   const sortIDFunction = (a: number, b: number) => {
     const cardInfoA = queryClient.getQueryData<CardInfo>(
@@ -112,11 +120,21 @@ const DeckView = ({}) => {
           </tr>
         </thead>
         <tbody className={"overflow-auto"}>
-          {Array.from(mainDeck)
-            .sort(([cardA, _], [cardB, __]) => sortIDFunction(cardA, cardB))
-            .map(([cardId, count]) => {
-              return <CardRow cardId={cardId} key={cardId} />;
-            })}
+          {Object.entries(cardNameInfos).map(([cardName, cardInfos]) => {
+            if (cardInfos.length === 0) {
+              return null;
+            }
+            const count = cardInfos.length;
+            const frameType = cardInfos[0]?.frameType ?? FrameType.DEFAULT;
+            return (
+              <CardRow
+                key={cardName}
+                cardName={cardName}
+                count={count}
+                frameType={frameType}
+              />
+            );
+          })}
         </tbody>
       </table>
     </div>

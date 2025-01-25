@@ -135,7 +135,7 @@ const GroupView = () => {
     if (activeGroupId === null) {
       return;
     }
-    addCardToGroup(activeGroupId, selectedCard.id);
+    addCardToGroup(activeGroupId, selectedCard.name);
   };
 
   const getIdFromCard = (card: CardInfo) => {
@@ -166,10 +166,21 @@ const GroupView = () => {
     );
   }, [activeGroupId, groups]);
 
-  const cardInfos = Array.from(mainDeck).map(([cardId, count]) => {
-    const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
-    return cardInfo;
-  });
+  const cardInfos = mainDeck
+    .map((cardId) => {
+      const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
+      return cardInfo;
+    })
+    .reduce((acc, cardInfo) => {
+      if (!cardInfo) {
+        return acc;
+      }
+      const alreadyIn = acc.map((ci) => ci.name).includes(cardInfo.name);
+      if (alreadyIn) {
+        return acc;
+      }
+      return [...acc, cardInfo];
+    }, [] as CardInfo[]);
 
   const activeGroup = groups.find((group) => group.id === activeGroupId);
   const activeGroupCardInfos = cardInfos
@@ -177,7 +188,7 @@ const GroupView = () => {
       return !!cardInfo;
     })
     .filter((cardInfo) => {
-      return !!activeGroup && activeGroup.cardIds.includes(cardInfo.id);
+      return !!activeGroup && activeGroup.cards.includes(cardInfo.name);
     });
 
   return (
@@ -211,20 +222,16 @@ const GroupView = () => {
         <div className={"rounded bg-gray-500"}>
           {groups
             .find((group) => group.id === activeGroupId)
-            ?.cardIds.map((cardId) => {
-              const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
-              if (!cardInfo) {
-                return null;
-              }
+            ?.cards.map((card) => {
               return (
                 <ChipSSF
-                  key={cardId}
-                  label={cardInfo?.name}
+                  key={card}
+                  label={card}
                   onDelete={() => {
                     if (activeGroupId === null) {
                       return;
                     }
-                    removeCardFromGroup(activeGroupId, cardId);
+                    removeCardFromGroup(activeGroupId, card);
                   }}
                 />
               );
@@ -243,14 +250,7 @@ const GroupView = () => {
                 <div>
                   <h4 className="text-sm font-medium">{group.name}</h4>
                   <p className="text-xs text-gray-500">
-                    Cards:{" "}
-                    {group.cardIds
-                      .map(
-                        (id) =>
-                          retrieveCardInfoInternal(id, queryClient)?.name ??
-                          "MISSING_CARD",
-                      )
-                      .join(", ")}
+                    Cards: {group.cards.join(", ")}
                   </p>
                 </div>
                 <button

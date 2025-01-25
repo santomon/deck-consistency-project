@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import * as ydke from "ydke";
 import { ChangeEvent, useState } from "react";
-import { useQueries, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQueries, useQuery, useQueryClient } from "react-query";
 import { CardInfo, Tab, YGOCardInfoResponseSchema } from "~/types";
 import { useDeckStore } from "~/store";
 import { main } from "@popperjs/core";
@@ -15,6 +15,7 @@ export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const [openTab, setOpenTab] = useState<Tab>(Tab.GROUPS);
   const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck);
+  useCardInfos();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value); // Update state
@@ -58,7 +59,7 @@ export default function Home() {
               type="text"
               value={inputValue}
               onChange={handleChange}
-              placeholder="Type something..."
+              placeholder="Enter YDKE URL..."
               className="w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
@@ -84,25 +85,25 @@ export default function Home() {
                   className={"rounded-t bg-gray-500"}
                   onClick={(e) => handleOpenTab(Tab.GROUPS)}
                 >
-                  Group
+                  Groups
                 </li>
                 <li
-                  className={"rounded-t bg-gray-500"}
+                  className={"rounded-t bg-gray-700"}
                   onClick={(e) => handleOpenTab(Tab.COMBOS)}
                 >
-                  Group
+                  Combos
                 </li>
                 <li
-                  className={"rounded-t bg-gray-500"}
-                  onClick={(e) => handleOpenTab(Tab.GROUPS)}
+                  className={"rounded-t bg-sky-300"}
+                  onClick={(e) => handleOpenTab(Tab.HAND_CONDITIONS)}
                 >
-                  Group
+                  Hand
                 </li>
                 <li
-                  className={"rounded-t bg-gray-500"}
-                  onClick={(e) => handleOpenTab(Tab.GROUPS)}
+                  className={"rounded-t bg-amber-200"}
+                  onClick={(e) => handleOpenTab(Tab.SIMULATION)}
                 >
-                  Group
+                  Simulation
                 </li>
               </ul>
               <div data-name={"tab-content"}>

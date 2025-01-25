@@ -1,4 +1,9 @@
-import { CardInfo, FrameType, YGOCardInfoResponseSchema } from "~/types";
+import {
+  CardId,
+  CardInfo,
+  FrameType,
+  YGOCardInfoResponseSchema,
+} from "~/types";
 import { QueryClient } from "react-query";
 
 export const queryKeyFactory = {
@@ -22,7 +27,7 @@ export const getCardInfo = async (cardIds?: number[]) => {
 };
 
 export const retrieveCardInfoInternal = (
-  cardId: number,
+  cardId: CardId,
   queryClient: QueryClient,
 ) => {
   const cardInfo = queryClient.getQueryData<CardInfo>(
@@ -43,4 +48,19 @@ export const lookUpFrameTypeSortingKey = (frameType: string) => {
   } else {
     return 2;
   }
+};
+
+export const groupBy = <T, K extends string | number | symbol>(
+  array: T[],
+  keyFn: (element: T) => K,
+) => {
+  return array.reduce(
+    (acc, element) => {
+      const key = keyFn(element);
+      acc[key] = acc[key] || [];
+      acc[key].push(element);
+      return acc;
+    },
+    {} as Record<K, T[]>,
+  );
 };
