@@ -12,7 +12,15 @@ export enum FrameType {
   XYZ = "xyz",
   FUSION = "fusion",
   RITUAL = "ritual",
+  DEFAULT = "default",
   //...
+}
+
+export enum Tab {
+  GROUPS = "groups",
+  COMBOS = "combos",
+  HAND_CONDITIONS = "handConditions",
+  SIMULATION = "simulation",
 }
 
 const CardIdSchema = z.number();

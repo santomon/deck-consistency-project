@@ -232,7 +232,6 @@ const GroupView = () => {
         </div>
       </DialogBox>
       <div>
-        <h1>Group View</h1>
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold">Existing Groups</h3>
           <ul className="space-y-4">

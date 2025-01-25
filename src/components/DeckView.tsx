@@ -103,15 +103,15 @@ const DeckView = ({}) => {
   };
 
   return (
-    <div className={""}>
-      <table className={"table-auto"}>
+    <div className={"h-full w-full"}>
+      <table className={"w-full table-auto"}>
         <thead>
           <tr className={"from- bg-gray-200"}>
             <th className={"border-gray-500"}>Card Name</th>
             <th className={"border-gray-500"}>Count</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className={"overflow-auto"}>
           {Array.from(mainDeck)
             .sort(([cardA, _], [cardB, __]) => sortIDFunction(cardA, cardB))
             .map(([cardId, count]) => {

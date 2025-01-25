@@ -3,7 +3,7 @@ import Link from "next/link";
 import * as ydke from "ydke";
 import { ChangeEvent, useState } from "react";
 import { useQueries, useQuery, useQueryClient } from "react-query";
-import { CardInfo, YGOCardInfoResponseSchema } from "~/types";
+import { CardInfo, Tab, YGOCardInfoResponseSchema } from "~/types";
 import { useDeckStore } from "~/store";
 import { main } from "@popperjs/core";
 import { queryKeyFactory } from "~/utils";
@@ -13,16 +13,16 @@ import GroupView from "~/components/GroupView";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
-  const queryClient = useQueryClient();
-  const mainDeckQueryResults = useCardInfos();
-  const mainDeck = useDeckStore((state) => state.mainDeck);
+  const [openTab, setOpenTab] = useState<Tab>(Tab.GROUPS);
   const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck);
-  const xdd = queryClient.getQueryData<CardInfo[]>(["cardInfo", 1]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value); // Update state
   };
 
+  const handleOpenTab = (tab: Tab) => {
+    setOpenTab(tab);
+  };
   const handleYDKEButtonSubmitted = () => {
     let ydkeResult;
     try {
@@ -68,9 +68,58 @@ export default function Home() {
               Parse YDKE
             </button>
           </div>
-          <div className={"flex flex-row justify-start gap-2"}>
-            <DeckView />
-            <GroupView />
+          <div
+            className={"flex flex-row justify-start gap-2"}
+            data-name={"lower-90%"}
+          >
+            <div className={"w-1/5 bg-blue-400"}>
+              <DeckView />
+            </div>
+            <div data-name={"right-main-content"} className={"flex-grow"}>
+              <ul
+                className={"flex flex-row bg-red-500"}
+                data-name={"tab-header"}
+              >
+                <li
+                  className={"rounded-t bg-gray-500"}
+                  onClick={(e) => handleOpenTab(Tab.GROUPS)}
+                >
+                  Group
+                </li>
+                <li
+                  className={"rounded-t bg-gray-500"}
+                  onClick={(e) => handleOpenTab(Tab.COMBOS)}
+                >
+                  Group
+                </li>
+                <li
+                  className={"rounded-t bg-gray-500"}
+                  onClick={(e) => handleOpenTab(Tab.GROUPS)}
+                >
+                  Group
+                </li>
+                <li
+                  className={"rounded-t bg-gray-500"}
+                  onClick={(e) => handleOpenTab(Tab.GROUPS)}
+                >
+                  Group
+                </li>
+              </ul>
+              <div data-name={"tab-content"}>
+                {(() => {
+                  switch (openTab) {
+                    case Tab.GROUPS:
+                      return <GroupView />;
+                    case Tab.COMBOS:
+                      return <div>Combos</div>;
+                    case Tab.HAND_CONDITIONS:
+                      return <div>Hand Conditions</div>;
+                    case Tab.SIMULATION:
+                      return <div>Simulation</div>;
+                  }
+                })()}
+              </div>
+            </div>
           </div>
         </div>
       </main>
