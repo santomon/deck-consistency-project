@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DialogBox from "~/components/Dialogbox";
-import { useDeckStore } from "~/store";
+import { useDeckStore, useGroups, useMainDeck } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
 import { useQueryClient } from "react-query";
 import { CardInfo } from "~/types";
@@ -14,8 +14,8 @@ const GroupView = () => {
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [groupNameProxy, setGroupNameProxy] = useState("");
   const queryClient = useQueryClient();
-  const mainDeck = useDeckStore((state) => state.mainDeck);
-  const groups = useDeckStore((state) => state.groups);
+  const mainDeck = useMainDeck();
+  const groups = useGroups();
   const createGroup = useDeckStore((state) => state.createGroup);
   const removeGroup = useDeckStore((state) => state.removeGroup);
   const removeCardFromGroup = useDeckStore(

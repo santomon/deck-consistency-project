@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "react-query";
 import { groupBy, lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
-import { useDeckStore } from "~/store";
+import { useDeckStore, useMainDeck } from "~/store";
 import { useCardInfo } from "~/queries";
 import { CardInfo, FrameType } from "~/types";
 
@@ -71,7 +71,7 @@ const CardRow = ({
 const DeckView = ({}) => {
   const queryClient = useQueryClient();
 
-  const mainDeck = useDeckStore((state) => state.mainDeck);
+  const mainDeck = useMainDeck();
   const loadedCardInfos = mainDeck
     .map((cardId) => {
       const cardInfo = queryClient.getQueryData<CardInfo>(
