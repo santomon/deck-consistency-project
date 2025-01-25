@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import DialogBox from "~/components/Dialogbox";
-import { useDeckStore, useGroups, useMainDeck } from "~/store";
+import { useCardInfos, useDeckStore, useGroups, useMainDeck } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
 import { useQueryClient } from "react-query";
 import { CardInfo } from "~/types";
@@ -23,6 +23,7 @@ const GroupView = () => {
   );
   const addCardToGroup = useDeckStore((state) => state.addCardToGroup);
   const changeGroupName = useDeckStore((state) => state.changeGroupName);
+  const cardInfos = useCardInfos();
   const debouncedGroupNameChange = useDebouncedCallback(
     ({ groupId, value }: { groupId: number; value: string }) => {
       changeGroupName(groupId, value);
@@ -69,22 +70,6 @@ const GroupView = () => {
       groups.find((group) => group.id === activeGroupId)?.name ?? "",
     );
   }, [activeGroupId, groups]);
-
-  const cardInfos = mainDeck
-    .map((cardId) => {
-      const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
-      return cardInfo;
-    })
-    .reduce((acc, cardInfo) => {
-      if (!cardInfo) {
-        return acc;
-      }
-      const alreadyIn = acc.map((ci) => ci.name).includes(cardInfo.name);
-      if (alreadyIn) {
-        return acc;
-      }
-      return [...acc, cardInfo];
-    }, [] as CardInfo[]);
 
   const activeGroup = groups.find((group) => group.id === activeGroupId);
   const activeGroupCardInfos = cardInfos
