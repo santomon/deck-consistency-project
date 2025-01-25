@@ -11,6 +11,7 @@ import DeckView from "~/components/DeckView";
 import { useCardInfos } from "~/queries";
 import GroupView from "~/components/GroupView";
 import CombosView from "~/components/CombosView";
+import HandsConditionView from "~/components/HandsCondition";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
@@ -115,7 +116,7 @@ export default function Home() {
                     case Tab.COMBOS:
                       return <CombosView />;
                     case Tab.HAND_CONDITIONS:
-                      return <div>Hand Conditions</div>;
+                      return <HandsConditionView />;
                     case Tab.SIMULATION:
                       return <div>Simulation</div>;
                   }
