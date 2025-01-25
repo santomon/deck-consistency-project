@@ -6,6 +6,12 @@ export enum FrameType {
   SPELL = "spell",
   TRAP = "trap",
   EFFECT_PENDULUM = "effect_pendulum",
+  NORMAL_PENDULUM = "normal_pendulum",
+  LINK = "link",
+  SYNCHRO = "synchro",
+  XYZ = "xyz",
+  FUSION = "fusion",
+  RITUAL = "ritual",
   //...
 }
 

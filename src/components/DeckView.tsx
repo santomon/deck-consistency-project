@@ -17,8 +17,11 @@ const frameTypeStyleLookup = {
   effect: {
     cellBgColor: "bg-amber-600",
   },
+  normal_pendulum: {
+    cellBgColor: "bg-gradient-to-b from-amber-300 to-teal-300",
+  },
   effect_pendulum: {
-    cellBgColor: "bg-gradient-to-b from-amber-600 to-green-600",
+    cellBgColor: "bg-gradient-to-b from-amber-600 to-teal-300",
   },
   default: {
     // i guess if it is in the main deck the chance is high, that it is an effect monster of some sort
