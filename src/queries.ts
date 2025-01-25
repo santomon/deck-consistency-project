@@ -24,6 +24,27 @@ const createMissingCardInfo = (): CardInfo => {
   };
 };
 
+const createLoadingCardInfo = (): CardInfo => {
+  return {
+    id: -1,
+    name: "Loading...",
+    typeline: [],
+    type: "Effect Monster",
+    humanReadableCardType: "Effect Monster",
+    frameType: FrameType.DEFAULT,
+    desc: "",
+    race: "",
+    atk: 0,
+    def: 0,
+    level: 1,
+    attribute: "LIGHT",
+    ygoprodeck_url: "",
+    card_sets: [],
+    card_images: [],
+    card_prices: [],
+  };
+};
+
 export const useCardInfo = (cardId: number) => {
   const mainDeck = useDeckStore((state) => state.mainDeck);
   return useQuery(
@@ -34,6 +55,7 @@ export const useCardInfo = (cardId: number) => {
     },
     {
       initialData: createMissingCardInfo,
+      placeholderData: createLoadingCardInfo,
     },
   );
 };
@@ -50,6 +72,7 @@ export const useCardInfos = () => {
           return cards[0];
         },
         initialData: createMissingCardInfo,
+        placeHolderData: createLoadingCardInfo,
       };
     }),
   );
