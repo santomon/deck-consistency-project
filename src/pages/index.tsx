@@ -10,6 +10,7 @@ import { queryKeyFactory } from "~/utils";
 import DeckView from "~/components/DeckView";
 import { useCardInfos } from "~/queries";
 import GroupView from "~/components/GroupView";
+import CombosView from "~/components/CombosView";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
@@ -112,7 +113,7 @@ export default function Home() {
                     case Tab.GROUPS:
                       return <GroupView />;
                     case Tab.COMBOS:
-                      return <div>Combos</div>;
+                      return <CombosView />;
                     case Tab.HAND_CONDITIONS:
                       return <div>Hand Conditions</div>;
                     case Tab.SIMULATION:
