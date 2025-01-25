@@ -33,6 +33,7 @@ interface I_DeckState {
     numberRequired: number,
   ) => void;
   changeComboName: (comboId: number, newName: string) => void;
+  removeComboPieceFromCombo: (comboId: number, comboPiece: ComboPiece) => void;
 }
 
 const countElements = <T>(elements: T[]) => {
@@ -282,5 +283,31 @@ export const useDeckStore = create<I_DeckState>((set) => {
           combos: updatedCombos,
         };
       }),
+    removeComboPieceFromCombo: (comboId, comboPiece) =>
+      set((state) => {
+        const updatedCombos = state.combos.map((combo) => {
+          if (combo.id !== comboId) {
+            return combo;
+          }
+          const updatedComboPieces = combo.comboPieces.filter((cp) => {
+            return (
+              cp.foreignId !== comboPiece.foreignId ||
+              cp.type !== comboPiece.type
+            );
+          });
+          return {
+            ...combo,
+            comboPieces: updatedComboPieces,
+          };
+        });
+        return {
+          ...state,
+          combos: updatedCombos,
+        };
+      }),
   };
 });
+
+export const useGroups = () => useDeckStore((state) => state.groups);
+export const useMainDeck = () => useDeckStore((state) => state.mainDeck);
+export const useCombos = () => useDeckStore((state) => state.combos);

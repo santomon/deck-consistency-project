@@ -5,10 +5,9 @@ import {
   getCardInfo,
   queryKeyFactory,
 } from "~/utils";
-import { useDeckStore } from "./store";
+import { useDeckStore, useMainDeck } from "./store";
 
 export const useCardInfo = (cardId: number) => {
-  const mainDeck = useDeckStore((state) => state.mainDeck);
   return useQuery(
     queryKeyFactory.cardInfo(cardId),
     async () => {
@@ -23,7 +22,7 @@ export const useCardInfo = (cardId: number) => {
 };
 
 export const useCardInfos = () => {
-  const mainDeck = useDeckStore((state) => state.mainDeck);
+  const mainDeck = useMainDeck();
 
   return useQueries(
     mainDeck.map((cardId) => {
