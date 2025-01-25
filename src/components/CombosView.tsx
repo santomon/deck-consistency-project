@@ -20,8 +20,6 @@ const CombosView = () => {
     useState(false);
   const [activeComboId, setActiveComboId] = useState<number | null>(null);
   const [comboNameProxy, setComboNameProxy] = useState("");
-  const queryClient = useQueryClient();
-  const mainDeck = useMainDeck();
   const groups = useGroups();
   const combos = useCombos();
   const cardInfos = useCardInfos();
