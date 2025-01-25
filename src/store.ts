@@ -9,7 +9,6 @@ interface I_DeckState {
   mainDeck: CardId[];
   groups: CardGroup[];
   cardInfoRegister: Map<CardId, CardInfo>;
-  comboPieces: ComboPiece[];
   combos: Combo[];
   addCardInfo: (cardId: CardId, cardInfo: CardInfo) => void;
   createGroup: () => GroupId;
@@ -48,7 +47,6 @@ export const useDeckStore = create<I_DeckState>((set) => {
   return {
     mainDeck: [],
     groups: [],
-    comboPieces: [],
     combos: [],
     cardInfoRegister: new Map<CardId, CardInfo>(),
     addCardInfo: (cardId: CardId, cardInfo: CardInfo) =>
