@@ -42,7 +42,7 @@ export const useCardInfos = () => {
   const mainDeck = useDeckStore((state) => state.mainDeck);
 
   return useQueries(
-    Array.from(mainDeck).map(([cardId, count]) => {
+    mainDeck.map((cardId) => {
       return {
         queryKey: queryKeyFactory.cardInfo(cardId),
         queryFn: async () => {
