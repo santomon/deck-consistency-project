@@ -1,16 +1,20 @@
 import { createStore, create } from "zustand";
-import { CardGroup, CardInfoSchema } from "~/types";
+import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
 import { CardLimit } from "~/constants";
+import { QueryClient } from "react-query";
+import { GroupId } from "./simulacrum";
 
 interface I_DeckState {
-  mainDeck: Map<number, number>;
+  mainDeck: CardId[];
   groups: CardGroup[];
-  createGroup: () => number;
+  cardInfoRegister: Map<CardId, CardInfo>;
+  addCardInfo: (cardId: CardId, cardInfo: CardInfo) => void;
+  createGroup: () => GroupId;
   removeGroup: (groupId: number) => void;
   changeGroupName: (groupId: number, newName: string) => void;
-  replaceCardsInGroup: (groupId: number, cardIds: number[]) => void;
-  addCardToGroup: (groupId: number, cardId: number) => void;
-  removeCardFromGroup: (groupId: number, cardId: number) => void;
+  replaceCardsInGroup: (groupId: number, cards: string[]) => void;
+  addCardToGroup: (groupId: number, card: string) => void;
+  removeCardFromGroup: (groupId: number, card: string) => void;
   addCardToMainDeck: (cardId: number, limit: CardLimit) => void;
   removeCardFromMainDeck: (cardId: number) => void;
   replaceMainDeck: (cardIds: number[]) => void;
@@ -26,8 +30,18 @@ const countElements = (elements: number[]): Map<number, number> => {
 
 export const useDeckStore = create<I_DeckState>((set) => {
   return {
-    mainDeck: new Map<number, number>(),
+    mainDeck: [],
     groups: [],
+    cardInfoRegister: new Map<CardId, CardInfo>(),
+    addCardInfo: (cardId: CardId, cardInfo: CardInfo) =>
+      set((state) => {
+        const updatedRegister = new Map(state.cardInfoRegister);
+        updatedRegister.set(cardId, cardInfo);
+        return {
+          ...state,
+          cardInfoRegister: updatedRegister,
+        };
+      }),
     createGroup: () => {
       let newId = -1;
       set((state) => {
@@ -35,7 +49,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
         const newGroup = {
           id: newId,
           name: `Group ${newId}`,
-          cardIds: [],
+          cards: [],
         };
         return {
           ...state,
@@ -67,18 +81,18 @@ export const useDeckStore = create<I_DeckState>((set) => {
           }),
         };
       }),
-    addCardToGroup: (groupId: number, cardId: number) =>
+    addCardToGroup: (groupId: number, card: string) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
           if (group.id !== groupId) {
             return group;
           }
-          if (group.cardIds.includes(cardId)) {
+          if (group.cards.includes(card)) {
             return group;
           }
           return {
             ...group,
-            cardIds: [...group.cardIds, cardId],
+            cards: [...group.cards, card],
           };
         });
         return {
@@ -86,22 +100,22 @@ export const useDeckStore = create<I_DeckState>((set) => {
           groups: updatedGroups,
         };
       }),
-    removeCardFromGroup: (groupId: number, cardId: number) =>
+    removeCardFromGroup: (groupId: number, card: string) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
           if (group.id !== groupId) {
             return group;
           }
-          if (!group.cardIds.includes(cardId)) {
+          if (!group.cards.includes(card)) {
             return group;
           }
-          const cardIndex = group.cardIds.indexOf(cardId);
-          const updatedCardIds = group.cardIds.filter(
+          const cardIndex = group.cards.indexOf(card);
+          const updatedCards = group.cards.filter(
             (_, index) => index !== cardIndex,
           );
           return {
             ...group,
-            cardIds: updatedCardIds,
+            cards: updatedCards,
           };
         });
         return {
@@ -109,7 +123,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           groups: updatedGroups,
         };
       }),
-    replaceCardsInGroup: (groupId: number, cardIds: number[]) =>
+    replaceCardsInGroup: (groupId: number, cards: string[]) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
           if (group.id !== groupId) {
@@ -117,7 +131,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           }
           return {
             ...group,
-            cardIds,
+            cards,
           };
         });
         return {
@@ -127,9 +141,19 @@ export const useDeckStore = create<I_DeckState>((set) => {
       }),
     addCardToMainDeck: (cardId: number, limit = CardLimit.UNLIMITED) =>
       set((state) => {
-        const updatedDeck = new Map(state.mainDeck);
-        updatedDeck.set(cardId, Math.min(updatedDeck.get(cardId) ?? 1, limit));
+        const updatedDeck = [...state.mainDeck];
+        const numberInDeck = state.mainDeck.filter((ci) => {
+          if (ci === cardId) return true;
+          const cn = state.cardInfoRegister.get(ci)?.name;
+          const cardName = state.cardInfoRegister.get(cardId)?.name;
+          return cn === cardName;
+        }).length;
 
+        if (numberInDeck >= limit.valueOf()) {
+          return state;
+        }
+
+        updatedDeck.push(cardId);
         return {
           ...state,
           mainDeck: updatedDeck,
@@ -137,15 +161,13 @@ export const useDeckStore = create<I_DeckState>((set) => {
       }),
     removeCardFromMainDeck: (cardId: number) =>
       set((state) => {
-        const updatedDeck = new Map(state.mainDeck);
-        const currentValue = updatedDeck.get(cardId);
-        if (!currentValue) {
+        const indexOfCard = state.mainDeck.indexOf(cardId);
+        if (indexOfCard === -1) {
           return state;
-        } else if (currentValue <= 1) {
-          updatedDeck.delete(cardId);
-        } else {
-          updatedDeck.set(cardId, currentValue - 1);
         }
+        const updatedDeck = state.mainDeck.filter(
+          (_, index) => index !== indexOfCard,
+        );
         return {
           ...state,
           mainDeck: updatedDeck,
@@ -153,11 +175,9 @@ export const useDeckStore = create<I_DeckState>((set) => {
       }),
     replaceMainDeck: (cardIds: number[]) =>
       set((state) => {
-        const newDeck = countElements(cardIds);
-        console.log("in replace", newDeck);
         return {
           ...state,
-          mainDeck: newDeck,
+          mainDeck: cardIds,
         };
       }),
   };

@@ -87,7 +87,7 @@ const CardInfoSchema = z.object({
 const CardGroupSchema = z.object({
   id: z.number(),
   name: z.string(),
-  cardIds: z.number().array(),
+  cards: z.string().array(),
 });
 type CardGroup = z.infer<typeof CardGroupSchema>;
 
