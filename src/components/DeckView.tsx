@@ -12,16 +12,31 @@ const frameTypeStyleLookup = {
     cellBgColor: "bg-pink-700",
   },
   normal: {
-    cellBgColor: "bg-amber-300",
+    cellBgColor: "bg-amber-200",
   },
   effect: {
-    cellBgColor: "bg-amber-600",
+    cellBgColor: "bg-orange-400",
   },
   normal_pendulum: {
-    cellBgColor: "bg-gradient-to-b from-amber-300 to-teal-300",
+    cellBgColor: "bg-gradient-to-b from-amber-200 to-teal-300",
   },
   effect_pendulum: {
-    cellBgColor: "bg-gradient-to-b from-amber-600 to-teal-300",
+    cellBgColor: "bg-gradient-to-b from-orange-400 to-teal-300",
+  },
+  link: {
+    cellBgColor: "bg-blue-400",
+  },
+  synchro: {
+    cellBgColor: "bg-stone-50",
+  },
+  xyz: {
+    cellBgColor: "bg-slate-600 text-neutral-100",
+  },
+  fusion: {
+    cellBgColor: "bg-purple-400",
+  },
+  ritual: {
+    cellBgColor: "bg-blue-300",
   },
   default: {
     // i guess if it is in the main deck the chance is high, that it is an effect monster of some sort
