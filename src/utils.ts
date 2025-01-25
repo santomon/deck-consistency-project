@@ -64,3 +64,43 @@ export const groupBy = <T, K extends string | number | symbol>(
     {} as Record<K, T[]>,
   );
 };
+export const createMissingCardInfo = (): CardInfo => {
+  return {
+    id: -1,
+    name: "CARD NOT FOUND",
+    typeline: [],
+    type: "Effect Monster",
+    humanReadableCardType: "Effect Monster",
+    frameType: FrameType.DEFAULT,
+    desc: "",
+    race: "",
+    atk: 0,
+    def: 0,
+    level: 1,
+    attribute: "LIGHT",
+    ygoprodeck_url: "",
+    card_sets: [],
+    card_images: [],
+    card_prices: [],
+  };
+};
+export const createLoadingCardInfo = (): CardInfo => {
+  return {
+    id: -1,
+    name: "Loading...",
+    typeline: [],
+    type: "Effect Monster",
+    humanReadableCardType: "Effect Monster",
+    frameType: FrameType.DEFAULT,
+    desc: "",
+    race: "",
+    atk: 0,
+    def: 0,
+    level: 1,
+    attribute: "LIGHT",
+    ygoprodeck_url: "",
+    card_sets: [],
+    card_images: [],
+    card_prices: [],
+  };
+};
