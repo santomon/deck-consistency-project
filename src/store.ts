@@ -2,13 +2,14 @@ import { createStore, create } from "zustand";
 import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
 import { CardLimit } from "~/constants";
 import { QueryClient } from "react-query";
-import { Combo, GroupId } from "./simulacrum";
+import { Combo, ComboPiece, GroupId } from "./simulacrum";
 import { queryKeyFactory } from "~/utils";
 
 interface I_DeckState {
   mainDeck: CardId[];
   groups: CardGroup[];
   cardInfoRegister: Map<CardId, CardInfo>;
+  comboPieces: ComboPiece[];
   combos: Combo[];
   addCardInfo: (cardId: CardId, cardInfo: CardInfo) => void;
   createGroup: () => GroupId;
@@ -25,6 +26,13 @@ interface I_DeckState {
   removeCardFromMainDeck: (cardId: number) => void;
   replaceMainDeck: (cardIds: number[]) => void;
   createCombo: () => number;
+  removeCombo: (comboId: number) => void;
+  addComboPieceToCombo: (comboId: number, comboPiece: ComboPiece) => void;
+  changeNumberRequiredForCombo: (
+    comboId: number,
+    numberRequired: number,
+  ) => void;
+  changeComboName: (comboId: number, newName: string) => void;
 }
 
 const countElements = <T>(elements: T[]) => {
@@ -39,6 +47,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
   return {
     mainDeck: [],
     groups: [],
+    comboPieces: [],
     combos: [],
     cardInfoRegister: new Map<CardId, CardInfo>(),
     addCardInfo: (cardId: CardId, cardInfo: CardInfo) =>
@@ -202,7 +211,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
         newId = Math.max(...state.combos.map((combo) => combo.id), 0) + 1;
         const newCombo: Combo = {
           id: newId,
-          comboPieceIds: [],
+          comboPieces: [],
           numberRequired: 0,
           name: `Combo ${newId}`,
         };
@@ -218,5 +227,60 @@ export const useDeckStore = create<I_DeckState>((set) => {
 
       return newId;
     },
+    removeCombo: (comboId: number) =>
+      set((state) => {
+        return {
+          ...state,
+          combos: state.combos.filter((combo) => combo.id !== comboId),
+        };
+      }),
+    addComboPieceToCombo: (comboId: number, comboPiece: ComboPiece) =>
+      set((state) => {
+        const updatedCombos = state.combos.map((combo) => {
+          if (combo.id !== comboId) {
+            return combo;
+          }
+          return {
+            ...combo,
+            comboPieces: [...combo.comboPieces, comboPiece],
+          };
+        });
+        return {
+          ...state,
+          combos: updatedCombos,
+        };
+      }),
+    changeNumberRequiredForCombo: (comboId, numberRequired) =>
+      set((state) => {
+        const updatedCombos = state.combos.map((combo) => {
+          if (combo.id !== comboId) {
+            return combo;
+          }
+          return {
+            ...combo,
+            numberRequired,
+          };
+        });
+        return {
+          ...state,
+          combos: updatedCombos,
+        };
+      }),
+    changeComboName: (comboId, newName) =>
+      set((state) => {
+        const updatedCombos = state.combos.map((combo) => {
+          if (combo.id !== comboId) {
+            return combo;
+          }
+          return {
+            ...combo,
+            name: newName,
+          };
+        });
+        return {
+          ...state,
+          combos: updatedCombos,
+        };
+      }),
   };
 });
