@@ -3,7 +3,7 @@ import { CardGroup } from "~/types";
 
 export interface ComboPiece {
   id: number;
-  foreignId: number;
+  foreignId: number | string;
   type: "card" | "group";
 }
 
@@ -16,7 +16,7 @@ export interface Combo {
   numberRequired: number;
 }
 export interface Condition {
-  foreignId: number;
+  foreignId: number | string;
   type: "card" | "group" | "combo";
 }
 
@@ -31,7 +31,7 @@ export interface CardEnvironment {
   combos: Combo[];
 }
 
-const simulateHand = (spreadOutDeck: CardId[], handSize: number) => {
+const simulateHand = (spreadOutDeck: string[], handSize: number) => {
   const indices = naiveGetRandomIntegersWithoutReplacement(
     handSize,
     spreadOutDeck.length,
@@ -40,7 +40,7 @@ const simulateHand = (spreadOutDeck: CardId[], handSize: number) => {
 };
 
 const evaluateHand = (
-  hand: CardId[],
+  hand: string[],
   handCondition: HandCondition,
   environment: CardEnvironment,
 ) => {
@@ -60,7 +60,7 @@ const evaluateHand = (
 };
 
 const handIncludesGroup = (
-  hand: CardId[],
+  hand: string[],
   groupId: GroupId,
   environment: CardEnvironment,
 ) => {
@@ -68,11 +68,11 @@ const handIncludesGroup = (
   if (!group) {
     return false;
   }
-  return group.cardIds.some((cardId) => hand.includes(cardId));
+  return group.cards.some((cardId) => hand.includes(cardId));
 };
 
 const handIncludesCombo = (
-  hand: CardId[],
+  hand: string[],
   comboId: ComboId,
   environment: CardEnvironment,
 ) => {
@@ -97,9 +97,19 @@ const handIncludesCombo = (
   const successes = comboPieces.map((comboPiece) => {
     switch (comboPiece.type) {
       case "card":
-        return hand.includes(comboPiece.foreignId);
+        if (typeof comboPiece.foreignId === "string") {
+          return hand.includes(comboPiece.foreignId);
+        }
+        throw new Error(
+          "foreign id of combo piece of type card is not a string",
+        );
       case "group":
-        return handIncludesGroup(hand, comboPiece.foreignId, environment);
+        if (typeof comboPiece.foreignId === "number") {
+          return handIncludesGroup(hand, comboPiece.foreignId, environment);
+        }
+        throw new Error(
+          "foreign id of combo piece of type group is not a number",
+        );
       default:
         throw new Error("Invalid combo piece type");
     }
@@ -108,17 +118,26 @@ const handIncludesCombo = (
 };
 
 const evaluateCondition = (
-  hand: CardId[],
+  hand: string[],
   condition: Condition,
   environment: CardEnvironment,
 ) => {
   switch (condition.type) {
     case "card":
-      return hand.includes(condition.foreignId);
+      if (typeof condition.foreignId === "string") {
+        return hand.includes(condition.foreignId);
+      }
+      throw new Error("foreign id of condition of type card is not a string");
     case "group":
-      return handIncludesGroup(hand, condition.foreignId, environment);
+      if (typeof condition.foreignId === "number") {
+        return handIncludesGroup(hand, condition.foreignId, environment);
+      }
+      throw new Error("foreign id of condition of type group is not a number");
     case "combo":
-      return handIncludesCombo(hand, condition.foreignId, environment);
+      if (typeof condition.foreignId === "number") {
+        return handIncludesCombo(hand, condition.foreignId, environment);
+      }
+      throw new Error("foreign id of condition of type combo is not a number");
     default:
       throw new Error("Invalid condition type");
   }
