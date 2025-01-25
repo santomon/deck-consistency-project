@@ -1,9 +1,9 @@
 import { createStore, create } from "zustand";
 import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
 import { CardLimit } from "~/constants";
-import { QueryClient } from "react-query";
+import { QueryClient, useQueryClient } from "react-query";
 import { Combo, ComboPiece, GroupId } from "./simulacrum";
-import { queryKeyFactory } from "~/utils";
+import { queryKeyFactory, retrieveCardInfoInternal } from "~/utils";
 
 interface I_DeckState {
   mainDeck: CardId[];
@@ -311,3 +311,25 @@ export const useDeckStore = create<I_DeckState>((set) => {
 export const useGroups = () => useDeckStore((state) => state.groups);
 export const useMainDeck = () => useDeckStore((state) => state.mainDeck);
 export const useCombos = () => useDeckStore((state) => state.combos);
+export const useCardInfos = () => {
+  const mainDeck = useMainDeck();
+  const queryClient = useQueryClient();
+
+  const cardInfos = mainDeck
+    .map((cardId) => {
+      const cardInfo = retrieveCardInfoInternal(cardId, queryClient);
+      return cardInfo;
+    })
+    .reduce((acc, cardInfo) => {
+      if (!cardInfo) {
+        return acc;
+      }
+      const alreadyIn = acc.map((ci) => ci.name).includes(cardInfo.name);
+      if (alreadyIn) {
+        return acc;
+      }
+      return [...acc, cardInfo];
+    }, [] as CardInfo[]);
+
+  return cardInfos;
+};
