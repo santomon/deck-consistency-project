@@ -56,6 +56,11 @@ const comboPieces: ComboPiece[] = [
     foreignId: 2,
     type: "group",
   },
+  {
+    id: 3,
+    foreignId: "1",
+    type: "card",
+  },
 ];
 
 const combos: Combo[] = [
@@ -63,6 +68,13 @@ const combos: Combo[] = [
     id: 1,
     comboPieceIds: [1, 2],
     numberRequired: 2,
+    name: "basic 2 card combo",
+  },
+  {
+    id: 2,
+    comboPieceIds: [1, 3],
+    numberRequired: 2,
+    name: "2 card combo, where 1 card occurs on both sides",
   },
 ];
 
@@ -104,6 +116,18 @@ test("handIncludesCombo3", () => {
 test("handDoesNotIncludeCombo4", () => {
   const hand = ["11", "2"];
   expect(handIncludesCombo(hand, 1, environmentSimple)).toBe(true);
+});
+
+test("comboInclusionWithRightNumberOfCards1", () => {
+  // for instance, rb ritual beast combo, 2x new lara could be full combo,
+  // but we would still need at least 2 new laras and not just 1
+  const hand = ["1"];
+  expect(handIncludesCombo(hand, 2, environmentSimple)).toBe(false);
+});
+
+test("comboInclusionWithRightNumberOfCards2", () => {
+  const hand = ["1", "2"];
+  expect(handIncludesCombo(hand, 2, environmentSimple)).toBe(true);
 });
 
 test("handDoesNotIncludeCombo1", () => {

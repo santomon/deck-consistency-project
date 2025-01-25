@@ -14,6 +14,7 @@ export interface Combo {
   id: ComboId;
   comboPieceIds: number[];
   numberRequired: number;
+  name: string;
 }
 export interface Condition {
   foreignId: number | string;
@@ -94,7 +95,7 @@ const handIncludesCombo = (
     }
     return comboPiece;
   });
-  const successes = comboPieces.map((comboPiece) => {
+  const comboPieceSuccesses = comboPieces.map((comboPiece) => {
     switch (comboPiece.type) {
       case "card":
         if (typeof comboPiece.foreignId === "string") {
@@ -114,7 +115,35 @@ const handIncludesCombo = (
         throw new Error("Invalid combo piece type");
     }
   });
-  return successes.filter((success) => success).length >= combo.numberRequired;
+
+  const cardSuccesses = hand.map((card) => {
+    return comboPieces.some((comboPiece) => {
+      switch (comboPiece.type) {
+        case "card":
+          if (typeof comboPiece.foreignId === "string") {
+            return comboPiece.foreignId === card;
+          }
+          throw new Error(
+            "foreign id of combo piece of type card is not a string",
+          );
+        case "group":
+          if (typeof comboPiece.foreignId === "number") {
+            return handIncludesGroup([card], comboPiece.foreignId, environment);
+          }
+          throw new Error(
+            "foreign id of combo piece of type group is not a number",
+          );
+        default:
+          throw new Error("Invalid combo piece type");
+      }
+    });
+  });
+  const comboSuccess =
+    comboPieceSuccesses.filter((success) => success).length >=
+    combo.numberRequired;
+  const cardSuccess =
+    cardSuccesses.filter((success) => success).length >= combo.numberRequired;
+  return comboSuccess && cardSuccess;
 };
 
 const evaluateCondition = (
