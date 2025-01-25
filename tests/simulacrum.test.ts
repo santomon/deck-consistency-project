@@ -45,19 +45,16 @@ const cardGroups: CardGroup[] = [
   },
 ];
 
-const comboPieces: ComboPiece[] = [
+const comboPiecesX: ComboPiece[] = [
   {
-    id: 1,
     foreignId: 1,
     type: "group",
   },
   {
-    id: 2,
     foreignId: 2,
     type: "group",
   },
   {
-    id: 3,
     foreignId: "1",
     type: "card",
   },
@@ -66,13 +63,13 @@ const comboPieces: ComboPiece[] = [
 const combos: Combo[] = [
   {
     id: 1,
-    comboPieceIds: [1, 2],
+    comboPieces: [comboPiecesX[0]!, comboPiecesX[1]!],
     numberRequired: 2,
     name: "basic 2 card combo",
   },
   {
     id: 2,
-    comboPieceIds: [1, 3],
+    comboPieces: [comboPiecesX[0]!, comboPiecesX[2]!],
     numberRequired: 2,
     name: "2 card combo, where 1 card occurs on both sides",
   },
@@ -94,7 +91,6 @@ const sampleHandCondition1: HandCondition = {
 };
 const environmentSimple: CardEnvironment = {
   cardGroups,
-  comboPieces,
   combos,
 };
 

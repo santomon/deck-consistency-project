@@ -2,7 +2,6 @@ import { CardId, CardInfo } from "~/types";
 import { CardGroup } from "~/types";
 
 export interface ComboPiece {
-  id: number;
   foreignId: number | string;
   type: "card" | "group";
 }
@@ -12,7 +11,7 @@ export type GroupId = number;
 
 export interface Combo {
   id: ComboId;
-  comboPieceIds: number[];
+  comboPieces: ComboPiece[];
   numberRequired: number;
   name: string;
 }
@@ -28,7 +27,6 @@ export interface HandCondition {
 
 export interface CardEnvironment {
   cardGroups: CardGroup[];
-  comboPieces: ComboPiece[];
   combos: Combo[];
 }
 
@@ -77,24 +75,12 @@ const handIncludesCombo = (
   comboId: ComboId,
   environment: CardEnvironment,
 ) => {
-  const {
-    cardGroups: allCardGroups,
-    comboPieces: allComboPieces,
-    combos: allCombos,
-  } = environment;
+  const { cardGroups: allCardGroups, combos: allCombos } = environment;
   const combo = allCombos.find((combo) => combo.id === comboId);
   if (!combo) {
     throw new Error("Invalid combo id");
   }
-  const comboPieces = combo.comboPieceIds.map((comboPieceId) => {
-    const comboPiece = allComboPieces.find(
-      (comboPiece) => comboPiece.id === comboPieceId,
-    );
-    if (!comboPiece) {
-      throw new Error("Invalid combo piece id");
-    }
-    return comboPiece;
-  });
+  const comboPieces = combo.comboPieces;
   const comboPieceSuccesses = comboPieces.map((comboPiece) => {
     switch (comboPiece.type) {
       case "card":
