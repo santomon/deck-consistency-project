@@ -2,13 +2,14 @@ import { createStore, create } from "zustand";
 import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
 import { CardLimit } from "~/constants";
 import { QueryClient } from "react-query";
-import { GroupId } from "./simulacrum";
+import { Combo, GroupId } from "./simulacrum";
 import { queryKeyFactory } from "~/utils";
 
 interface I_DeckState {
   mainDeck: CardId[];
   groups: CardGroup[];
   cardInfoRegister: Map<CardId, CardInfo>;
+  combos: Combo[];
   addCardInfo: (cardId: CardId, cardInfo: CardInfo) => void;
   createGroup: () => GroupId;
   removeGroup: (groupId: number) => void;
@@ -23,6 +24,7 @@ interface I_DeckState {
   ) => void;
   removeCardFromMainDeck: (cardId: number) => void;
   replaceMainDeck: (cardIds: number[]) => void;
+  createCombo: () => number;
 }
 
 const countElements = <T>(elements: T[]) => {
@@ -37,6 +39,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
   return {
     mainDeck: [],
     groups: [],
+    combos: [],
     cardInfoRegister: new Map<CardId, CardInfo>(),
     addCardInfo: (cardId: CardId, cardInfo: CardInfo) =>
       set((state) => {
@@ -193,5 +196,27 @@ export const useDeckStore = create<I_DeckState>((set) => {
           mainDeck: cardIds,
         };
       }),
+    createCombo: () => {
+      let newId = -1;
+      set((state) => {
+        newId = Math.max(...state.combos.map((combo) => combo.id), 0) + 1;
+        const newCombo: Combo = {
+          id: newId,
+          comboPieceIds: [],
+          numberRequired: 0,
+          name: `Combo ${newId}`,
+        };
+        return {
+          ...state,
+          combos: [...state.combos, newCombo],
+        };
+      });
+
+      if (newId === -1) {
+        throw new Error("Failed to create combo");
+      }
+
+      return newId;
+    },
   };
 });
