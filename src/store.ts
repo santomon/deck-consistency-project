@@ -74,8 +74,8 @@ export const useDeckStore = create<I_DeckState>((set) => {
     groups: [],
     combos: [],
     handConditions: [],
-    cardInfoRegister: new Map<CardId, CardInfo>(),
-    addCardInfo: (cardId: CardId, cardInfo: CardInfo) =>
+    cardInfoRegister: new Map(),
+    addCardInfo: (cardId, cardInfo) =>
       set((state) => {
         const updatedRegister = new Map(state.cardInfoRegister);
         updatedRegister.set(cardId, cardInfo);
@@ -101,14 +101,14 @@ export const useDeckStore = create<I_DeckState>((set) => {
 
       return newId;
     },
-    removeGroup: (groupId: number) =>
+    removeGroup: (groupId) =>
       set((state) => {
         return {
           ...state,
           groups: state.groups.filter((group) => group.id !== groupId),
         };
       }),
-    changeGroupName: (groupId: number, newName: string) =>
+    changeGroupName: (groupId, newName) =>
       set((state) => {
         return {
           ...state,
@@ -123,7 +123,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           }),
         };
       }),
-    addCardToGroup: (groupId: number, card: string) =>
+    addCardToGroup: (groupId, card) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
           if (group.id !== groupId) {
@@ -142,7 +142,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           groups: updatedGroups,
         };
       }),
-    removeCardFromGroup: (groupId: number, card: string) =>
+    removeCardFromGroup: (groupId, card) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
           if (group.id !== groupId) {
@@ -165,7 +165,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           groups: updatedGroups,
         };
       }),
-    replaceCardsInGroup: (groupId: number, cards: string[]) =>
+    replaceCardsInGroup: (groupId, cards) =>
       set((state) => {
         const updatedGroups = state.groups.map((group) => {
           if (group.id !== groupId) {
@@ -181,11 +181,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           groups: updatedGroups,
         };
       }),
-    addCardToMainDeck: (
-      cardId: number,
-      queryClient: QueryClient,
-      limit = CardLimit.UNLIMITED,
-    ) =>
+    addCardToMainDeck: (cardId, queryClient, limit = CardLimit.UNLIMITED) =>
       set((state) => {
         const updatedDeck = [...state.mainDeck];
         const numberInDeck = state.mainDeck.filter((ci) => {
@@ -209,7 +205,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           mainDeck: updatedDeck,
         };
       }),
-    removeCardFromMainDeck: (cardId: number) =>
+    removeCardFromMainDeck: (cardId) =>
       set((state) => {
         const indexOfCard = state.mainDeck.indexOf(cardId);
         if (indexOfCard === -1) {
@@ -223,7 +219,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           mainDeck: updatedDeck,
         };
       }),
-    replaceMainDeck: (cardIds: number[]) =>
+    replaceMainDeck: (cardIds) =>
       set((state) => {
         return {
           ...state,
@@ -252,14 +248,14 @@ export const useDeckStore = create<I_DeckState>((set) => {
 
       return newId;
     },
-    removeCombo: (comboId: number) =>
+    removeCombo: (comboId) =>
       set((state) => {
         return {
           ...state,
           combos: state.combos.filter((combo) => combo.id !== comboId),
         };
       }),
-    addComboPieceToCombo: (comboId: number, comboPiece: ComboPiece) =>
+    addComboPieceToCombo: (comboId, comboPiece) =>
       set((state) => {
         const updatedCombos = state.combos.map((combo) => {
           if (combo.id !== comboId) {
@@ -355,10 +351,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           ),
         };
       }),
-    addIncludeConditionToHandCondition: (
-      handConditionId: number,
-      condition: Condition,
-    ) =>
+    addIncludeConditionToHandCondition: (handConditionId, condition) =>
       set((state) => {
         const updatedConditions = state.handConditions.map((hc) => {
           if (hc.id !== handConditionId) {
@@ -377,10 +370,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
           handConditions: updatedConditions,
         };
       }),
-    addExcludeConditionToHandCondition: (
-      handConditionId: number,
-      condition: Condition,
-    ) =>
+    addExcludeConditionToHandCondition: (handConditionId, condition) =>
       set((state) => {
         const updatedConditions = state.handConditions.map((hc) => {
           if (hc.id !== handConditionId) {
