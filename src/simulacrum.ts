@@ -21,6 +21,8 @@ export interface Condition {
 }
 
 export interface HandCondition {
+  id: number;
+  name: string;
   shouldIncludeAtLeastOneOf: Condition[];
   mustNotInclude: Condition[];
 }

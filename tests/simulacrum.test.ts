@@ -76,6 +76,8 @@ const combos: Combo[] = [
 ];
 
 const sampleHandCondition1: HandCondition = {
+  id: 1,
+  name: "condition 1",
   shouldIncludeAtLeastOneOf: [
     {
       foreignId: 1,

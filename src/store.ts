@@ -2,7 +2,13 @@ import { createStore, create } from "zustand";
 import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
 import { CardLimit } from "~/constants";
 import { QueryClient, useQueryClient } from "react-query";
-import { Combo, ComboPiece, GroupId } from "./simulacrum";
+import {
+  Combo,
+  ComboPiece,
+  Condition,
+  GroupId,
+  HandCondition,
+} from "./simulacrum";
 import { queryKeyFactory, retrieveCardInfoInternal } from "~/utils";
 
 interface I_DeckState {
@@ -10,6 +16,7 @@ interface I_DeckState {
   groups: CardGroup[];
   cardInfoRegister: Map<CardId, CardInfo>;
   combos: Combo[];
+  handConditions: HandCondition[];
   addCardInfo: (cardId: CardId, cardInfo: CardInfo) => void;
   createGroup: () => GroupId;
   removeGroup: (groupId: number) => void;
@@ -33,6 +40,24 @@ interface I_DeckState {
   ) => void;
   changeComboName: (comboId: number, newName: string) => void;
   removeComboPieceFromCombo: (comboId: number, comboPiece: ComboPiece) => void;
+  createHandCondition: () => void;
+  removeHandCondition: (handConditionId: number) => void;
+  addIncludeConditionToHandCondition: (
+    handsConditionId: number,
+    condition: Condition,
+  ) => void;
+  addExcludeConditionToHandCondition: (
+    handConditionId: number,
+    condition: Condition,
+  ) => void;
+  removeIncludeConditionFromHandCondition: (
+    handConditionId: number,
+    condition: Condition,
+  ) => void;
+  removeExcludeConditionFromHandCondition: (
+    handConditionId: number,
+    condition: Condition,
+  ) => void;
 }
 
 const countElements = <T>(elements: T[]) => {
@@ -48,6 +73,7 @@ export const useDeckStore = create<I_DeckState>((set) => {
     mainDeck: [],
     groups: [],
     combos: [],
+    handConditions: [],
     cardInfoRegister: new Map<CardId, CardInfo>(),
     addCardInfo: (cardId: CardId, cardInfo: CardInfo) =>
       set((state) => {
@@ -303,12 +329,121 @@ export const useDeckStore = create<I_DeckState>((set) => {
           combos: updatedCombos,
         };
       }),
+    createHandCondition: () =>
+      set((state) => {
+        const newId =
+          Math.max(...state.handConditions.map((hc) => hc.id), 0) + 1;
+        return {
+          ...state,
+          handConditions: [
+            ...state.handConditions,
+            {
+              id: newId,
+              name: `Hand Condition ${newId}`,
+              shouldIncludeAtLeastOneOf: [],
+              mustNotInclude: [],
+            },
+          ],
+        };
+      }),
+    removeHandCondition: (handConditionId: number) =>
+      set((state) => {
+        return {
+          ...state,
+          handConditions: state.handConditions.filter(
+            (hc) => hc.id !== handConditionId,
+          ),
+        };
+      }),
+    addIncludeConditionToHandCondition: (
+      handConditionId: number,
+      condition: Condition,
+    ) =>
+      set((state) => {
+        const updatedConditions = state.handConditions.map((hc) => {
+          if (hc.id !== handConditionId) {
+            return hc;
+          }
+          return {
+            ...hc,
+            shouldIncludeAtLeastOneOf: [
+              ...hc.shouldIncludeAtLeastOneOf,
+              condition,
+            ],
+          };
+        });
+        return {
+          ...state,
+          handConditions: updatedConditions,
+        };
+      }),
+    addExcludeConditionToHandCondition: (
+      handConditionId: number,
+      condition: Condition,
+    ) =>
+      set((state) => {
+        const updatedConditions = state.handConditions.map((hc) => {
+          if (hc.id !== handConditionId) {
+            return hc;
+          }
+          return {
+            ...hc,
+            mustNotInclude: [...hc.mustNotInclude, condition],
+          };
+        });
+        return {
+          ...state,
+          handConditions: updatedConditions,
+        };
+      }),
+    removeIncludeConditionFromHandCondition: (handConditionId, condition) =>
+      set((state) => {
+        const updatedConditions = state.handConditions.map((hc) => {
+          if (hc.id !== handConditionId) {
+            return hc;
+          }
+          return {
+            ...hc,
+            shouldIncludeAtLeastOneOf: hc.shouldIncludeAtLeastOneOf.filter(
+              (c) =>
+                c.foreignId !== condition.foreignId ||
+                c.type !== condition.type,
+            ),
+          };
+        });
+        return {
+          ...state,
+          handConditions: updatedConditions,
+        };
+      }),
+    removeExcludeConditionFromHandCondition: (handConditionId, condition) =>
+      set((state) => {
+        const updatedConditions = state.handConditions.map((hc) => {
+          if (hc.id !== handConditionId) {
+            return hc;
+          }
+          return {
+            ...hc,
+            mustNotInclude: hc.mustNotInclude.filter(
+              (c) =>
+                c.foreignId !== condition.foreignId ||
+                c.type !== condition.type,
+            ),
+          };
+        });
+        return {
+          ...state,
+          handConditions: updatedConditions,
+        };
+      }),
   };
 });
 
 export const useGroups = () => useDeckStore((state) => state.groups);
 export const useMainDeck = () => useDeckStore((state) => state.mainDeck);
 export const useCombos = () => useDeckStore((state) => state.combos);
+export const useHandConditions = () =>
+  useDeckStore((state) => state.handConditions);
 export const useCardInfos = () => {
   const mainDeck = useMainDeck();
   const queryClient = useQueryClient();
