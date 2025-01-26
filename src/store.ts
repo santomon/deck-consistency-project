@@ -58,6 +58,7 @@ interface I_DeckState {
     handConditionId: number,
     condition: Condition,
   ) => void;
+  changeHandConditionName: (handConditionId: number, newName: string) => void;
 }
 
 const countElements = <T>(elements: T[]) => {
@@ -419,6 +420,22 @@ export const useDeckStore = create<I_DeckState>((set) => {
                 c.foreignId !== condition.foreignId ||
                 c.type !== condition.type,
             ),
+          };
+        });
+        return {
+          ...state,
+          handConditions: updatedConditions,
+        };
+      }),
+    changeHandConditionName: (handConditionId, newName) =>
+      set((state) => {
+        const updatedConditions = state.handConditions.map((hc) => {
+          if (hc.id !== handConditionId) {
+            return hc;
+          }
+          return {
+            ...hc,
+            name: newName,
           };
         });
         return {
