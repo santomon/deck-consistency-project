@@ -449,8 +449,40 @@ export const useDeckStore = create<I_DeckState>((set) => {
 export const useGroups = () => useDeckStore((state) => state.groups);
 export const useMainDeck = () => useDeckStore((state) => state.mainDeck);
 export const useCombos = () => useDeckStore((state) => state.combos);
-export const useHandConditions = () =>
-  useDeckStore((state) => state.handConditions);
+export const useHandConditions = () => {
+  const handConditions = useDeckStore((state) => state.handConditions);
+  const changeHandConditionName = useDeckStore(
+    (state) => state.changeHandConditionName,
+  );
+  const createHandCondition = useDeckStore(
+    (state) => state.createHandCondition,
+  );
+  const removeHandCondition = useDeckStore(
+    (state) => state.removeHandCondition,
+  );
+  const addIncludeConditionToHandCondition = useDeckStore(
+    (state) => state.addIncludeConditionToHandCondition,
+  );
+  const addExcludeConditionToHandCondition = useDeckStore(
+    (state) => state.addExcludeConditionToHandCondition,
+  );
+  const removeIncludeConditionFromHandCondition = useDeckStore(
+    (state) => state.removeIncludeConditionFromHandCondition,
+  );
+  const removeExcludeConditionFromHandCondition = useDeckStore(
+    (state) => state.removeExcludeConditionFromHandCondition,
+  );
+  return {
+    handConditions,
+    changeHandConditionName,
+    createHandCondition,
+    removeHandCondition,
+    addIncludeConditionToHandCondition,
+    addExcludeConditionToHandCondition,
+    removeIncludeConditionFromHandCondition,
+    removeExcludeConditionFromHandCondition,
+  };
+};
 export const useCardInfos = () => {
   const mainDeck = useMainDeck();
   const queryClient = useQueryClient();
