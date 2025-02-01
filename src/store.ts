@@ -1,14 +1,13 @@
-import { createStore, create } from "zustand";
+import { create } from "zustand";
 import {
   CardGroup,
   CardId,
   CardInfo,
-  CardInfoSchema,
   Combo,
   ComboPiece,
   Condition,
   GroupId,
-  HandCondition
+  HandCondition,
 } from "~/types";
 import { CardLimit } from "~/constants";
 import { QueryClient, useQueryClient } from "react-query";
@@ -345,9 +344,9 @@ export const useDeckStore = create<I_DeckState>((set) => {
             },
           ],
         };
-      })
+      });
       return newId;
-    } ,
+    },
     removeHandCondition: (handConditionId: number) =>
       set((state) => {
         return {
@@ -453,6 +452,19 @@ export const useDeckStore = create<I_DeckState>((set) => {
 
 export const useGroups = () => useDeckStore((state) => state.groups);
 export const useMainDeck = () => useDeckStore((state) => state.mainDeck);
+export const useSpreadOutMainDeck = () => {
+  const mainDeck = useMainDeck();
+  const cardInfos = useCardInfos();
+  return mainDeck.map((cardId) => {
+    const cardName = cardInfos.find((cardInfo) => cardInfo.id === cardId)?.name;
+    if (!cardName) {
+      throw new Error(
+        `could not retrieve card name from CardInfo of card id: ${cardId}...do we use placeholder cardinfos?`,
+      );
+    }
+    return cardName;
+  });
+};
 export const useCombos = () => useDeckStore((state) => state.combos);
 export const useHandConditions = () => {
   const handConditions = useDeckStore((state) => state.handConditions);
