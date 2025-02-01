@@ -5,7 +5,6 @@ import { ChangeEvent, useState } from "react";
 import { useMutation, useQueries, useQuery, useQueryClient } from "react-query";
 import { CardInfo, Tab, YGOCardInfoResponseSchema } from "~/types";
 import { useDeckStore } from "~/store";
-import { main } from "@popperjs/core";
 import { queryKeyFactory } from "~/utils";
 import DeckView from "~/components/DeckView";
 import { useCardInfos } from "~/queries";
