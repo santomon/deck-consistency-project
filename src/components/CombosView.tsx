@@ -8,12 +8,11 @@ import {
   useMainDeck,
 } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
-import { CardInfo } from "~/types";
+import {CardInfo, Combo, ComboPiece} from "~/types";
 import { retrieveCardInfoInternal } from "~/utils";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
-import { Combo, ComboPiece } from "~/simulacrum";
 
 const CombosView = () => {
   const [createComboDialogBoxIsOpen, setCreateComboDialogBoxIsOpen] =

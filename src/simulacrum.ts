@@ -1,36 +1,10 @@
-import { CardId, CardInfo } from "~/types";
-import { CardGroup } from "~/types";
-
-export interface ComboPiece {
-  foreignId: number | string;
-  type: "card" | "group";
-}
-
-export type ComboId = number;
-export type GroupId = number;
-
-export interface Combo {
-  id: ComboId;
-  comboPieces: ComboPiece[];
-  numberRequired: number;
-  name: string;
-}
-export interface Condition {
-  foreignId: number | string;
-  type: "card" | "group" | "combo";
-}
-
-export interface HandCondition {
-  id: number;
-  name: string;
-  shouldIncludeAtLeastOneOf: Condition[];
-  mustNotInclude: Condition[];
-}
-
-export interface CardEnvironment {
-  cardGroups: CardGroup[];
-  combos: Combo[];
-}
+import {
+  CardEnvironment,
+  ComboId,
+  Condition,
+  GroupId,
+  HandCondition,
+} from "~/types";
 
 const simulateHand = (spreadOutDeck: string[], handSize: number) => {
   const indices = naiveGetRandomIntegersWithoutReplacement(

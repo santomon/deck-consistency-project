@@ -7,11 +7,10 @@ import {
   useHandConditions,
 } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
-import { HandConditionWhere } from "~/types";
+import {Condition, HandConditionWhere} from "~/types";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
-import { ComboPiece, Condition } from "~/simulacrum";
 
 const HandsCondition = () => {
   const [

@@ -1,14 +1,17 @@
 import { createStore, create } from "zustand";
-import { CardGroup, CardId, CardInfo, CardInfoSchema } from "~/types";
-import { CardLimit } from "~/constants";
-import { QueryClient, useQueryClient } from "react-query";
 import {
+  CardGroup,
+  CardId,
+  CardInfo,
+  CardInfoSchema,
   Combo,
   ComboPiece,
   Condition,
   GroupId,
-  HandCondition,
-} from "./simulacrum";
+  HandCondition
+} from "~/types";
+import { CardLimit } from "~/constants";
+import { QueryClient, useQueryClient } from "react-query";
 import { queryKeyFactory, retrieveCardInfoInternal } from "~/utils";
 
 interface I_DeckState {

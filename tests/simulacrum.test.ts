@@ -1,11 +1,7 @@
 import { test, expect } from "@jest/globals";
-import { CardGroup } from "~/types";
+import {CardEnvironment, CardGroup, Combo, ComboPiece, HandCondition} from "~/types";
 import {
-  CardEnvironment,
-  Combo,
-  ComboPiece,
   evaluateHand,
-  HandCondition,
   handIncludesCombo,
 } from "~/simulacrum";
 
