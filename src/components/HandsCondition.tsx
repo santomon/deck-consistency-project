@@ -51,8 +51,8 @@ const HandsCondition = () => {
   );
 
   const handleCreateHandCondition = () => {
-    const createCondition = createHandCondition();
-    setActiveHandConditionId(createCondition);
+    const condition = createHandCondition();
+    setActiveHandConditionId(condition);
     setCreateHandConditionDialogBoxIsOpen(true);
   };
 
