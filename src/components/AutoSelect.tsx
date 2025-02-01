@@ -57,7 +57,7 @@ export const AutoSelect = <T,>({
 
       {/* Dropdown Menu */}
       {isDropdownVisible && (
-        <ul className="absolute mt-1 max-h-48 w-full overflow-auto rounded-lg border border-gray-300 bg-white shadow-lg">
+        <ul className="absolute mt-1 max-h-48 w-full overflow-auto rounded-lg border border-gray-300 bg-white shadow-lg z-10 ">
           {options.map((option, index) => {
             if (searchFilterPredicate(option) && notSelectedPredicate(option)) {
               return (
