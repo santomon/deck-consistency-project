@@ -103,3 +103,4 @@ type Data = z.infer<typeof YGOCardInfoResponseSchema>;
 export type { CardInfo, CardGroup, Data };
 
 export { CardInfoSchema, YGOCardInfoResponseSchema, CardGroupSchema };
+export type HandConditionWhere = "include" | "exclude";
