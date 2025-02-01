@@ -1,118 +1,164 @@
 import { useEffect, useState } from "react";
-import { useQueryClient } from "react-query";
 import {
   useCardInfos,
   useCombos,
   useDeckStore,
   useGroups,
-  useMainDeck,
+  useHandConditions,
 } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
-import { CardInfo } from "~/types";
-import { retrieveCardInfoInternal } from "~/utils";
+import { HandConditionWhere } from "~/types";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
-import { Combo, ComboPiece } from "~/simulacrum";
+import { ComboPiece, Condition } from "~/simulacrum";
 
 const HandsCondition = () => {
-  const [createComboDialogBoxIsOpen, setCreateComboDialogBoxIsOpen] =
-    useState(false);
-  const [activeComboId, setActiveComboId] = useState<number | null>(null);
+  const [
+    createHandConditionDialogBoxIsOpen,
+    setCreateHandConditionDialogBoxIsOpen,
+  ] = useState(false);
+  const [activeHandConditionId, setActiveHandConditionId] = useState<
+    number | null
+  >(null);
   const [handConditionNameProxy, setHandConditionNameProxy] = useState("");
   const groups = useGroups();
   const combos = useCombos();
   const cardInfos = useCardInfos();
   const createCombo = useDeckStore((state) => state.createCombo);
   const removeCombo = useDeckStore((state) => state.removeCombo);
-  const addComboPieceToCombo = useDeckStore(
-    (state) => state.addComboPieceToCombo,
-  );
-  const removeComboPieceFromCombo = useDeckStore(
-    (state) => state.removeComboPieceFromCombo,
-  );
-  const changeComboName = useDeckStore((state) => state.changeComboName);
-  const debouncedChangeComboName = useDebouncedCallback(
-    ({ comboId, value }: { comboId: number; value: string }) => {
-      changeComboName(comboId, value);
+
+  const {
+    addExcludeConditionToHandCondition,
+    addIncludeConditionToHandCondition,
+    changeHandConditionName,
+    createHandCondition,
+    handConditions,
+    removeExcludeConditionFromHandCondition,
+    removeHandCondition,
+    removeIncludeConditionFromHandCondition,
+  } = useHandConditions();
+
+  const debouncedChangeHandContitionName = useDebouncedCallback(
+    ({
+      handConditionId,
+      value,
+    }: {
+      handConditionId: number;
+      value: string;
+    }) => {
+      changeHandConditionName(handConditionId, value);
     },
     500,
   );
-  const changeNumberRequiredForCombo = useDeckStore(
-    (state) => state.changeNumberRequiredForCombo,
-  );
 
-  const handleCreateCombo = () => {
+  const handleCreateHandCondition = () => {
     const newComboId = createCombo();
-    setActiveComboId(newComboId);
-    setCreateComboDialogBoxIsOpen(true);
+    setActiveHandConditionId(newComboId);
+    setCreateHandConditionDialogBoxIsOpen(true);
   };
 
-  const handleOptionSelected = (comboPiece: ComboPiece) => {
-    if (activeComboId === null) {
+  const handleOptionSelected = (
+    condition: Condition,
+    where: HandConditionWhere,
+  ) => {
+    if (activeHandConditionId === null) {
       return;
     }
-    addComboPieceToCombo(activeComboId, comboPiece);
+    switch (where) {
+      case "include":
+        addIncludeConditionToHandCondition(activeHandConditionId, condition);
+        break;
+      case "exclude":
+        addExcludeConditionToHandCondition(activeHandConditionId, condition);
+        break;
+    }
   };
 
-  const getComboPieceHash = (comboPiece: ComboPiece) => {
-    return `${comboPiece.type}-${comboPiece.foreignId}`;
+  const getConditionHash = (condition: Condition) => {
+    return `${condition.type}-${condition.foreignId}`;
   };
 
-  const getNameFromComboPiece = (comboPiece: ComboPiece) => {
-    if (comboPiece.type === "group") {
+  const getNameFromCondition = (condition: Condition) => {
+    if (condition.type === "combo") {
+      const comboName = combos.find(
+        (combo) => combo.id === condition.foreignId,
+      )?.name;
+      if (comboName) {
+        return comboName;
+      }
+      throw new Error(`could not get name for combo id ${condition.foreignId}`);
+    } else if (condition.type === "group") {
       const groupName = groups.find(
-        (group) => group.id === comboPiece.foreignId,
+        (group) => group.id === condition.foreignId,
       )?.name;
       if (groupName) {
         return groupName;
       } else {
-        throw new Error(`Invalid group id ${comboPiece.foreignId}`);
+        throw new Error(
+          `could not get name for group id ${condition.foreignId}`,
+        );
       }
-    } else if (comboPiece.type === "card") {
+    } else if (condition.type === "card") {
       const cardName = cardInfos.find(
-        (cardInfo) => cardInfo.id === comboPiece.foreignId,
+        (cardInfo) => cardInfo.id === condition.foreignId,
       )?.name;
       if (cardName) {
         return cardName;
       } else {
-        throw new Error(`Invalid card id ${comboPiece.foreignId}`);
+        throw new Error(
+          `could not get name for card id ${condition.foreignId}`,
+        );
       }
     }
     throw new Error("Invalid combo piece type");
   };
 
-  const handleDebouncedChangeComboName = (
-    comboId: number | null,
+  const handleDebouncedChangeHandConditionName = (
+    handConditionId: number | null,
     value: string,
   ) => {
-    if (comboId === null) {
+    if (handConditionId === null) {
       return;
     }
     setHandConditionNameProxy(value);
-    debouncedChangeComboName({ comboId, value });
+    debouncedChangeHandContitionName({ handConditionId, value });
   };
 
   useEffect(() => {
-    if (activeComboId === null) {
+    if (activeHandConditionId === null) {
       return;
     }
     setHandConditionNameProxy(
-      combos.find((combo) => combo.id === activeComboId)?.name ?? "",
+      handConditions.find(
+        (handCondition) => handCondition.id === activeHandConditionId,
+      )?.name ?? "",
     );
-  }, [activeComboId, combos]);
+  }, [activeHandConditionId, handConditions]);
 
-  const activeCombo = combos.find((combo) => combo.id === activeComboId);
-  const activeComboPieces = activeCombo?.comboPieces ?? [];
+  const activeHandCondition = handConditions.find(
+    (handCondition) => handCondition.id === activeHandConditionId,
+  );
+  const activeConditionsShouldIncludeAtLeastOneOf =
+    activeHandCondition?.shouldIncludeAtLeastOneOf ?? [];
+  const activeConditionsMustNotInclude =
+    activeHandCondition?.mustNotInclude ?? [];
 
-  const groupOptions: ComboPiece[] = groups.map((group) => {
+  const comboOptions: Condition[] = combos.map(combo => {
+    return {
+      type: "combo",
+      foreignId: combo.id
+    }
+  })
+
+  const groupOptions: Condition[] = groups.map((group) => {
     return {
       type: "group",
       foreignId: group.id,
     };
   });
 
-  const cardOptions: ComboPiece[] = cardInfos.map((cardInfo) => {
+  const cardOptions: Condition[] = cardInfos.map((cardInfo) => {
     return {
       type: "card",
       foreignId: cardInfo.id,
@@ -122,97 +168,123 @@ const HandsCondition = () => {
   return (
     <>
       <DialogBox
-        isOpen={createComboDialogBoxIsOpen}
+        isOpen={createHandConditionDialogBoxIsOpen}
         onClose={() => {
-          setCreateComboDialogBoxIsOpen(false);
-          setActiveComboId(null);
+          setCreateHandConditionDialogBoxIsOpen(false);
+          setActiveHandConditionId(null);
           setHandConditionNameProxy("");
         }}
       >
-        <label> Combo Name </label>
+        <label> Hand Condition Name </label>
         <input
           id="textInput"
           type="text"
           value={handConditionNameProxy}
           onChange={(e) =>
-            handleDebouncedChangeComboName(activeComboId, e.target.value)
+            handleDebouncedChangeHandConditionName(
+              activeHandConditionId,
+              e.target.value,
+            )
           }
           placeholder="Type something..."
           className="w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <AutoSelect
-          options={[...groupOptions, ...cardOptions]}
-          selectedOptions={activeComboPieces}
-          getOptionsKey={getComboPieceHash}
-          getOptionsLabel={getNameFromComboPiece}
-          handleOnSelect={handleOptionSelected}
+          options={[...groupOptions, ...cardOptions, ...comboOptions]}
+          selectedOptions={activeConditionsShouldIncludeAtLeastOneOf}
+          getOptionsKey={getConditionHash}
+          getOptionsLabel={getNameFromCondition}
+          handleOnSelect={(condition) => handleOptionSelected(condition, "include")}
         />
-        <input
-          value={activeCombo?.numberRequired}
-          className={
-            "w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          }
-          onChange={(e) => {
-            if (activeComboId === null || isNaN(parseInt(e.target.value))) {
-              return;
-            }
-            changeNumberRequiredForCombo(
-              activeComboId,
-              parseInt(e.target.value),
-            );
-          }}
+        <AutoSelect
+            options={[...groupOptions, ...cardOptions, ...comboOptions]}
+            selectedOptions={activeConditionsMustNotInclude}
+            getOptionsKey={getConditionHash}
+            getOptionsLabel={getNameFromCondition}
+            handleOnSelect={(condition) => handleOptionSelected(condition, "exclude")}
         />
         <div className={"rounded bg-gray-500"}>
-          {combos
-            .find((combo) => combo.id === activeComboId)
-            ?.comboPieces.map((comboPiece) => {
+          {handConditions
+            .find((handCondition) => handCondition.id === activeHandConditionId)
+            ?.shouldIncludeAtLeastOneOf.map((condition) => {
               return (
                 <ChipSSF
-                  key={getComboPieceHash(comboPiece)}
-                  label={getNameFromComboPiece(comboPiece)}
+                  key={getConditionHash(condition)}
+                  label={getNameFromCondition(condition)}
                   onDelete={() => {
-                    if (activeComboId === null) {
+                    if (activeHandConditionId === null) {
                       return;
                     }
-                    removeComboPieceFromCombo(activeComboId, comboPiece);
+                    removeIncludeConditionFromHandCondition(
+                      activeHandConditionId,
+                      condition,
+                    );
                   }}
                 />
               );
             })}
         </div>
+        <div className={"rounded bg-gray-700"}>
+          {handConditions
+              .find((handCondition) => handCondition.id === activeHandConditionId)
+              ?.mustNotInclude.map((condition) => {
+                return (
+                    <ChipSSF
+                        key={getConditionHash(condition)}
+                        label={getNameFromCondition(condition)}
+                        onDelete={() => {
+                          if (activeHandConditionId === null) {
+                            return;
+                          }
+                          removeExcludeConditionFromHandCondition(
+                              activeHandConditionId,
+                              condition,
+                          );
+                        }}
+                    />
+                );
+              })}
+        </div>
       </DialogBox>
       <div>
         <div className="mt-6">
-          <h3 className="mb-4 text-lg font-bold">Combos</h3>
+          <h3 className="mb-4 text-lg font-bold">Hand Conditions</h3>
           <ul className="space-y-4">
-            {combos.map((combo) => (
+            {handConditions.map((handCondition) => (
               <li
-                key={combo.id}
+                key={handCondition.id}
                 className="flex items-center justify-between rounded-md border border-gray-300 p-4"
               >
                 <div>
-                  <h4 className="text-sm font-medium">{combo.name}</h4>
+                  <h4 className="text-sm font-medium">{handCondition.name}</h4>
                   <p className="text-xs text-gray-500">
-                    Pieces:{" "}
-                    {combo.comboPieces
-                      .map((comboPiece) => {
-                        return getNameFromComboPiece(comboPiece);
+                    Should Include one of:{" "}
+                    {handCondition.shouldIncludeAtLeastOneOf
+                      .map((condition) => {
+                        return getNameFromCondition(condition);
                       })
                       .join(", ")}
                   </p>
+                  <p className="text-xs text-gray-700">
+                    Must Not Include:{" "}
+                    {handCondition.mustNotInclude
+                        .map((condition) => {
+                          return getNameFromCondition(condition);
+                        })
+                        .join(", ")}
+                  </p>
                 </div>
-                Number required: {combo.numberRequired}
                 <button
                   onClick={() => {
-                    setActiveComboId(combo.id);
-                    setCreateComboDialogBoxIsOpen(true);
+                    setActiveHandConditionId(handCondition.id);
+                    setCreateHandConditionDialogBoxIsOpen(true);
                   }}
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => {
-                    removeCombo(combo.id);
+                    removeCombo(handCondition.id);
                   }}
                   className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
                 >
@@ -222,7 +294,7 @@ const HandsCondition = () => {
             ))}
           </ul>
         </div>
-        <button onClick={handleCreateCombo}>Create Combo</button>
+        <button onClick={handleCreateHandCondition}>Create Combo</button>
       </div>
     </>
   );
