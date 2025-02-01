@@ -25,8 +25,6 @@ const HandsCondition = () => {
   const groups = useGroups();
   const combos = useCombos();
   const cardInfos = useCardInfos();
-  const createCombo = useDeckStore((state) => state.createCombo);
-  const removeCombo = useDeckStore((state) => state.removeCombo);
 
   const {
     addExcludeConditionToHandCondition,
@@ -53,8 +51,8 @@ const HandsCondition = () => {
   );
 
   const handleCreateHandCondition = () => {
-    const newComboId = createCombo();
-    setActiveHandConditionId(newComboId);
+    const createCondition = createHandCondition();
+    setActiveHandConditionId(createCondition);
     setCreateHandConditionDialogBoxIsOpen(true);
   };
 
@@ -284,7 +282,7 @@ const HandsCondition = () => {
                 </button>
                 <button
                   onClick={() => {
-                    removeCombo(handCondition.id);
+                    removeHandCondition(handCondition.id);
                   }}
                   className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
                 >
