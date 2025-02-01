@@ -157,4 +157,5 @@ export {
   handIncludesCombo,
   evaluateCondition,
   evaluateHand,
+  simulateHand,
 };

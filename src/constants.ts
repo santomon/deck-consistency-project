@@ -5,3 +5,6 @@ export enum CardLimit {
     SEMI_LIMITED = 2,
     UNLIMITED = 3,
 }
+
+
+export const HAND_SIZE = 5
