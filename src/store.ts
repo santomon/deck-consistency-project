@@ -40,7 +40,7 @@ interface I_DeckState {
   ) => void;
   changeComboName: (comboId: number, newName: string) => void;
   removeComboPieceFromCombo: (comboId: number, comboPiece: ComboPiece) => void;
-  createHandCondition: () => void;
+  createHandCondition: () => number;
   removeHandCondition: (handConditionId: number) => void;
   addIncludeConditionToHandCondition: (
     handsConditionId: number,
@@ -326,10 +326,10 @@ export const useDeckStore = create<I_DeckState>((set) => {
           combos: updatedCombos,
         };
       }),
-    createHandCondition: () =>
+    createHandCondition: () => {
+      let newId = -1;
       set((state) => {
-        const newId =
-          Math.max(...state.handConditions.map((hc) => hc.id), 0) + 1;
+        newId = Math.max(...state.handConditions.map((hc) => hc.id), 0) + 1;
         return {
           ...state,
           handConditions: [
@@ -342,7 +342,9 @@ export const useDeckStore = create<I_DeckState>((set) => {
             },
           ],
         };
-      }),
+      })
+      return newId;
+    } ,
     removeHandCondition: (handConditionId: number) =>
       set((state) => {
         return {
