@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "react-query";
 import { groupBy, lookUpFrameTypeSortingKey, queryKeyFactory } from "~/utils";
 import { useDeckStore, useMainDeck } from "~/store";
-import { useCardInfo } from "~/queries";
+import { useCardInfoQuery } from "~/queries";
 import { CardInfo, FrameType } from "~/types";
 
 const frameTypeStyleLookup = {
@@ -84,31 +84,6 @@ const DeckView = ({}) => {
   const cardNameInfos = groupBy(loadedCardInfos, (info) => {
     return info.name;
   });
-
-  const sortIDFunction = (a: number, b: number) => {
-    const cardInfoA = queryClient.getQueryData<CardInfo>(
-      queryKeyFactory.cardInfo(a),
-    );
-    const cardInfoB = queryClient.getQueryData<CardInfo>(
-      queryKeyFactory.cardInfo(b),
-    );
-
-    if (!cardInfoA || !cardInfoB) {
-      return 0;
-    }
-    const frameTypeA = cardInfoA.frameType;
-    const frameTypeB = cardInfoB.frameType;
-
-    const sortingKeyA = frameTypeA ? lookUpFrameTypeSortingKey(frameTypeA) : 0;
-    const sortingKeyB = frameTypeB ? lookUpFrameTypeSortingKey(frameTypeB) : 0;
-    const T = -sortingKeyA + sortingKeyB;
-    if (T !== 0) {
-      return T;
-    }
-    const cardNameA = cardInfoA.name;
-    const cardNameB = cardInfoB.name;
-    return cardNameA.localeCompare(cardNameB);
-  };
 
   return (
     <div className={"h-full w-full"}>

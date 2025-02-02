@@ -7,16 +7,17 @@ import { CardInfo, Tab, YGOCardInfoResponseSchema } from "~/types";
 import { useDeckStore } from "~/store";
 import { queryKeyFactory } from "~/utils";
 import DeckView from "~/components/DeckView";
-import { useCardInfos } from "~/queries";
+import { useCardInfoQueries } from "~/queries";
 import GroupView from "~/components/GroupView";
 import CombosView from "~/components/CombosView";
 import HandsConditionView from "~/components/HandsCondition";
+import Simulation from "~/components/Simulation";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState(""); // State maintenance
   const [openTab, setOpenTab] = useState<Tab>(Tab.GROUPS);
   const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck);
-  useCardInfos();
+  useCardInfoQueries();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value); // Update state
@@ -117,7 +118,7 @@ export default function Home() {
                     case Tab.HAND_CONDITIONS:
                       return <HandsConditionView />;
                     case Tab.SIMULATION:
-                      return <div>Simulation</div>;
+                      return <Simulation />;
                   }
                 })()}
               </div>
