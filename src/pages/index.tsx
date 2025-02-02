@@ -1,118 +1,130 @@
 import Head from "next/head";
 import Link from "next/link";
 import * as ydke from "ydke";
-import {ChangeEvent, useState} from "react";
-import {useQueries, useQuery} from "react-query";
-import {CardInfo, YGOCardInfoResponseSchema} from "~/types";
-
-const createPlaceHolderCardInfoResponse = (): CardInfo[] => {
-    return []
-}
-
-const getCardInfo = async (cardIds?: number[] ) => {
-    const commaSeparatedIds = cardIds?.join(',');
-    if (!commaSeparatedIds) {
-        return createPlaceHolderCardInfoResponse();
-    }
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CIENTVAR_YGO_CARD_INFO_API_BASE_URL}?id=${commaSeparatedIds}`);
-    const responseData = YGOCardInfoResponseSchema.parse(await response.json());
-    return responseData.data;
-}
+import { ChangeEvent, useState } from "react";
+import { useMutation, useQueries, useQuery, useQueryClient } from "react-query";
+import { CardInfo, Tab, YGOCardInfoResponseSchema } from "~/types";
+import { useDeckStore } from "~/store";
+import { queryKeyFactory } from "~/utils";
+import DeckView from "~/components/DeckView";
+import { useCardInfos } from "~/queries";
+import GroupView from "~/components/GroupView";
+import CombosView from "~/components/CombosView";
+import HandsConditionView from "~/components/HandsCondition";
 
 export default function Home() {
-    const [inputValue, setInputValue] = useState(''); // State maintenance
+  const [inputValue, setInputValue] = useState(""); // State maintenance
+  const [openTab, setOpenTab] = useState<Tab>(Tab.GROUPS);
+  const replaceMainDeck = useDeckStore((state) => state.replaceMainDeck);
+  useCardInfos();
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value); // Update state
-    };
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value); // Update state
+  };
 
+  const handleOpenTab = (tab: Tab) => {
+    setOpenTab(tab);
+  };
+  const handleYDKEButtonSubmitted = () => {
     let ydkeResult;
     try {
-        ydkeResult = ydke.parseURL(inputValue); //
-        ydkeResult = {
-            main: Array.from(ydkeResult.main),
-            extra: Array.from(ydkeResult.extra),
-            side: Array.from(ydkeResult.side),
-        }
+      ydkeResult = ydke.parseURL(inputValue); //
+      ydkeResult = {
+        main: Array.from(ydkeResult.main),
+        extra: Array.from(ydkeResult.extra),
+        side: Array.from(ydkeResult.side),
+      };
     } catch (e) {
-        console.error(e);
-        ydkeResult = {
-            main: new Array<number>(),
-            extra: new Array<number>(),
-            side: new Array<number>(),
-        };
+      ydkeResult = {
+        main: new Array<number>(),
+        extra: new Array<number>(),
+        side: new Array<number>(),
+      };
     }
+    replaceMainDeck(ydkeResult.main);
+    setInputValue("");
+  };
 
-    console.log("ydkeResult", ydkeResult)
-    const mainDeckIds = ydkeResult.main;
-
-
-    const [mainDeckInfoQueryResult, extraDeckInfoQueryResult, sideDeckInfoQueryResult] = useQueries([
-        {
-            queryKey: ['cardInfo', ydkeResult.main.join(',')],
-            queryFn: () => getCardInfo(mainDeckIds),
-            enabled: ydkeResult.main.length > 0,
-        },
-        {
-            queryKey: ['cardInfo', ydkeResult.extra.join(',')],
-            queryFn: () => getCardInfo(ydkeResult.extra),
-            enabled: ydkeResult.extra.length >  0,
-        },
-        {
-            queryKey: ['cardInfo', ydkeResult.side.join(',')],
-            queryFn: () => getCardInfo(ydkeResult.side),
-            enabled: ydkeResult.side.length > 0,
-        }
-    ])
-
-    const {data: mainDeckInfo, isError: mainDeckQueryError} = mainDeckInfoQueryResult;
-
-    if (mainDeckQueryError || mainDeckInfo === undefined) {
-        return (
-            <div>
-                <h1>Error fetching data from ygoprodecks server</h1>
-            </div>
-        )
-    }
-
-    const mainDeckCards = ydkeResult.main.map((cardId, index) => {
-        const card = mainDeckInfo.find((card) => card.id === cardId);
-        if (!card) return null;
-        return (
-            <div key={`card-info-display-${cardId}-${index}`}>
-                <h2>{card.name}</h2>
-                <img width={120} src={card.card_images[0]?.image_url} alt={card.name} />
-            </div>
-        )
-    }
-    )
-
-    return (
-      <>
-        <Head>
-          <title>Deck Consistency Simulation</title>
-          <meta name="description" content="Deck Consistency Simulation" />
-          {/*<link rel="icon" href="/favicon.ico" />*/}
-        </Head>
-        <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-          <div className="flex flex-col items-center p-4">
-            <label
-              htmlFor="textInput"
-              className="mb-2 text-lg font-medium text-gray-700"
-            >
-              Enter Text
-            </label>
+  return (
+    <>
+      <Head>
+        <title>Deck Consistency Simulation</title>
+        <meta name="description" content="Deck Consistency Simulation" />
+        {/*<link rel="icon" href="/favicon.ico" />*/}
+      </Head>
+      <main className="flex min-h-screen flex-col justify-start bg-teal-700 p-5">
+        <div className="flex flex-col gap-5">
+          <div className={"flex flex-row items-center gap-2"}>
             <input
               id="textInput"
               type="text"
               value={inputValue}
               onChange={handleChange}
-              placeholder="Type something..."
-              className="w-80 rounded-md border border-gray-300 px-4 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter YDKE URL..."
+              className="w-80 rounded-md border border-gray-300 py-2 pl-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            <button
+              onClick={handleYDKEButtonSubmitted}
+              className="rounded-md bg-blue-500 p-2 text-white shadow-sm"
+            >
+              Parse YDKE
+            </button>
           </div>
-            {mainDeckCards}
-        </main>
-      </>
-    );
+          <div
+            className={"flex flex-row justify-start gap-2"}
+            data-name={"lower-90%"}
+          >
+            <div className={"w-1/5 bg-blue-400"}>
+              <DeckView />
+            </div>
+            <div data-name={"right-main-content"} className={"flex-grow"}>
+              <ul
+                className={"flex flex-row bg-red-500"}
+                data-name={"tab-header"}
+              >
+                <li
+                  className={"rounded-t bg-gray-500"}
+                  onClick={(e) => handleOpenTab(Tab.GROUPS)}
+                >
+                  Groups
+                </li>
+                <li
+                  className={"rounded-t bg-gray-700"}
+                  onClick={(e) => handleOpenTab(Tab.COMBOS)}
+                >
+                  Combos
+                </li>
+                <li
+                  className={"rounded-t bg-sky-300"}
+                  onClick={(e) => handleOpenTab(Tab.HAND_CONDITIONS)}
+                >
+                  Hand
+                </li>
+                <li
+                  className={"rounded-t bg-amber-200"}
+                  onClick={(e) => handleOpenTab(Tab.SIMULATION)}
+                >
+                  Simulation
+                </li>
+              </ul>
+              <div data-name={"tab-content"}>
+                {(() => {
+                  switch (openTab) {
+                    case Tab.GROUPS:
+                      return <GroupView />;
+                    case Tab.COMBOS:
+                      return <CombosView />;
+                    case Tab.HAND_CONDITIONS:
+                      return <HandsConditionView />;
+                    case Tab.SIMULATION:
+                      return <div>Simulation</div>;
+                  }
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </>
+  );
 }
