@@ -7,7 +7,7 @@ import {
 } from "~/utils";
 import { useDeckStore, useMainDeck } from "./store";
 
-export const useCardInfo = (cardId: number) => {
+export const useCardInfoQuery = (cardId: number) => {
   return useQuery(
     queryKeyFactory.cardInfo(cardId),
     async () => {
@@ -21,7 +21,7 @@ export const useCardInfo = (cardId: number) => {
   );
 };
 
-export const useCardInfos = () => {
+export const useCardInfoQueries = () => {
   const mainDeck = useMainDeck();
 
   return useQueries(

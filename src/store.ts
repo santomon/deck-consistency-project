@@ -9,7 +9,7 @@ import {
   GroupId,
   HandCondition,
 } from "~/types";
-import { CardLimit } from "~/constants";
+import { CardLimit, UNKNOWN_CARD_NAME } from "~/constants";
 import { QueryClient, useQueryClient } from "react-query";
 import { queryKeyFactory, retrieveCardInfoInternal } from "~/utils";
 
@@ -457,12 +457,7 @@ export const useSpreadOutMainDeck = () => {
   const cardInfos = useCardInfos();
   return mainDeck.map((cardId) => {
     const cardName = cardInfos.find((cardInfo) => cardInfo.id === cardId)?.name;
-    if (!cardName) {
-      throw new Error(
-        `could not retrieve card name from CardInfo of card id: ${cardId}...do we use placeholder cardinfos?`,
-      );
-    }
-    return cardName;
+    return cardName ? cardName : UNKNOWN_CARD_NAME;
   });
 };
 export const useCombos = () => useDeckStore((state) => state.combos);

@@ -7,7 +7,7 @@ import {
   useHandConditions,
 } from "~/store";
 import { useDebouncedCallback } from "~/components/hooks";
-import {Condition, HandConditionWhere} from "~/types";
+import { Condition, HandConditionWhere } from "~/types";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
@@ -36,7 +36,7 @@ const HandsCondition = () => {
     removeIncludeConditionFromHandCondition,
   } = useHandConditions();
 
-  const debouncedChangeHandContitionName = useDebouncedCallback(
+  const debouncedChangeHandConditionName = useDebouncedCallback(
     ({
       handConditionId,
       value,
@@ -97,16 +97,7 @@ const HandsCondition = () => {
         );
       }
     } else if (condition.type === "card") {
-      const cardName = cardInfos.find(
-        (cardInfo) => cardInfo.id === condition.foreignId,
-      )?.name;
-      if (cardName) {
-        return cardName;
-      } else {
-        throw new Error(
-          `could not get name for card id ${condition.foreignId}`,
-        );
-      }
+      return condition.foreignId.toString();
     }
     throw new Error("Invalid combo piece type");
   };
@@ -119,7 +110,7 @@ const HandsCondition = () => {
       return;
     }
     setHandConditionNameProxy(value);
-    debouncedChangeHandContitionName({ handConditionId, value });
+    debouncedChangeHandConditionName({ handConditionId, value });
   };
 
   useEffect(() => {
@@ -141,12 +132,12 @@ const HandsCondition = () => {
   const activeConditionsMustNotInclude =
     activeHandCondition?.mustNotInclude ?? [];
 
-  const comboOptions: Condition[] = combos.map(combo => {
+  const comboOptions: Condition[] = combos.map((combo) => {
     return {
       type: "combo",
-      foreignId: combo.id
-    }
-  })
+      foreignId: combo.id,
+    };
+  });
 
   const groupOptions: Condition[] = groups.map((group) => {
     return {
@@ -158,7 +149,7 @@ const HandsCondition = () => {
   const cardOptions: Condition[] = cardInfos.map((cardInfo) => {
     return {
       type: "card",
-      foreignId: cardInfo.id,
+      foreignId: cardInfo.name,
     };
   });
 
@@ -191,14 +182,18 @@ const HandsCondition = () => {
           selectedOptions={activeConditionsShouldIncludeAtLeastOneOf}
           getOptionsKey={getConditionHash}
           getOptionsLabel={getNameFromCondition}
-          handleOnSelect={(condition) => handleOptionSelected(condition, "include")}
+          handleOnSelect={(condition) =>
+            handleOptionSelected(condition, "include")
+          }
         />
         <AutoSelect
-            options={[...groupOptions, ...cardOptions, ...comboOptions]}
-            selectedOptions={activeConditionsMustNotInclude}
-            getOptionsKey={getConditionHash}
-            getOptionsLabel={getNameFromCondition}
-            handleOnSelect={(condition) => handleOptionSelected(condition, "exclude")}
+          options={[...groupOptions, ...cardOptions, ...comboOptions]}
+          selectedOptions={activeConditionsMustNotInclude}
+          getOptionsKey={getConditionHash}
+          getOptionsLabel={getNameFromCondition}
+          handleOnSelect={(condition) =>
+            handleOptionSelected(condition, "exclude")
+          }
         />
         <div className={"rounded bg-gray-500"}>
           {handConditions
@@ -223,24 +218,24 @@ const HandsCondition = () => {
         </div>
         <div className={"rounded bg-gray-700"}>
           {handConditions
-              .find((handCondition) => handCondition.id === activeHandConditionId)
-              ?.mustNotInclude.map((condition) => {
-                return (
-                    <ChipSSF
-                        key={getConditionHash(condition)}
-                        label={getNameFromCondition(condition)}
-                        onDelete={() => {
-                          if (activeHandConditionId === null) {
-                            return;
-                          }
-                          removeExcludeConditionFromHandCondition(
-                              activeHandConditionId,
-                              condition,
-                          );
-                        }}
-                    />
-                );
-              })}
+            .find((handCondition) => handCondition.id === activeHandConditionId)
+            ?.mustNotInclude.map((condition) => {
+              return (
+                <ChipSSF
+                  key={getConditionHash(condition)}
+                  label={getNameFromCondition(condition)}
+                  onDelete={() => {
+                    if (activeHandConditionId === null) {
+                      return;
+                    }
+                    removeExcludeConditionFromHandCondition(
+                      activeHandConditionId,
+                      condition,
+                    );
+                  }}
+                />
+              );
+            })}
         </div>
       </DialogBox>
       <div>
@@ -265,10 +260,10 @@ const HandsCondition = () => {
                   <p className="text-xs text-gray-700">
                     Must Not Include:{" "}
                     {handCondition.mustNotInclude
-                        .map((condition) => {
-                          return getNameFromCondition(condition);
-                        })
-                        .join(", ")}
+                      .map((condition) => {
+                        return getNameFromCondition(condition);
+                      })
+                      .join(", ")}
                   </p>
                 </div>
                 <button
