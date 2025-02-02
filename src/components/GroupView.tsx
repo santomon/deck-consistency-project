@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import DialogBox from "~/components/Dialogbox";
 import { useCardInfos, useDeckStore, useGroups, useMainDeck } from "~/store";
-import { useDebouncedCallback } from "~/components/hooks";
+import { useDebouncedCallback } from "~/hooks";
 import { useQueryClient } from "react-query";
 import { CardInfo } from "~/types";
 import { retrieveCardInfoInternal } from "~/utils";

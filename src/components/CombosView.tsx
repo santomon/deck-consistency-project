@@ -7,8 +7,8 @@ import {
   useGroups,
   useMainDeck,
 } from "~/store";
-import { useDebouncedCallback } from "~/components/hooks";
-import {CardInfo, Combo, ComboPiece} from "~/types";
+import { useDebouncedCallback } from "~/hooks";
+import { CardInfo, Combo, ComboPiece } from "~/types";
 import { retrieveCardInfoInternal } from "~/utils";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";

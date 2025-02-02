@@ -6,7 +6,7 @@ import {
   useGroups,
   useHandConditions,
 } from "~/store";
-import { useDebouncedCallback } from "~/components/hooks";
+import { useDebouncedCallback } from "~/hooks";
 import { Condition, HandConditionWhere } from "~/types";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
