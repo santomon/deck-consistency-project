@@ -63,14 +63,6 @@ interface I_DeckState {
   changeHandConditionName: (handConditionId: number, newName: string) => void;
 }
 
-const countElements = <T>(elements: T[]) => {
-  const countMap = new Map<T, number>();
-  for (const element of elements) {
-    countMap.set(element, (countMap.get(element) ?? 0) + 1);
-  }
-  return countMap;
-};
-
 export const useDeckStore = create<I_DeckState>((set) => {
   return {
     mainDeck: [],
