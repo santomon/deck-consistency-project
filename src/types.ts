@@ -23,8 +23,10 @@ export enum Tab {
   SIMULATION = "simulation",
 }
 
-const CardIdSchema = z.number();
-export type CardId = z.infer<typeof CardIdSchema>;
+const IdSchema = z.number();
+export type CardId = z.infer<typeof IdSchema>;
+export type ComboId = z.infer<typeof IdSchema>;
+export type GroupId = z.infer<typeof IdSchema>;
 
 // CardSet schema
 // define the structure of the card sets
@@ -99,40 +101,55 @@ const YGOCardInfoResponseSchema = z.object({
 
 // Example: Infer TypeScript types from the schema
 type CardInfo = z.infer<typeof CardInfoSchema>;
-type Data = z.infer<typeof YGOCardInfoResponseSchema>;
-export type { CardInfo, CardGroup, Data };
+type YGOCardInfoResponse = z.infer<typeof YGOCardInfoResponseSchema>;
+export type { CardInfo, CardGroup, YGOCardInfoResponse };
 
 export { CardInfoSchema, YGOCardInfoResponseSchema, CardGroupSchema };
 export type HandConditionWhere = "include" | "exclude";
 
-export interface ComboPiece {
-  foreignId: number | string;
-  type: "card" | "group";
-}
+export const ComboPieceSchema = z.object({
+  foreignId: IdSchema,
+  type: z.enum(["card", "group"]),
+});
+export type ComboPiece = z.infer<typeof ComboPieceSchema>;
 
-export type ComboId = number;
-export type GroupId = number;
+export const ComboSchema = z.object({
+  id: IdSchema,
+  comboPieces: ComboPieceSchema.array(),
+  numberRequired: z.number(),
+  name: z.string(),
+});
+export type Combo = z.infer<typeof ComboSchema>;
 
-export interface Combo {
-  id: ComboId;
-  comboPieces: ComboPiece[];
-  numberRequired: number;
-  name: string;
-}
+export const ConditionSchema = z.object({
+  foreignId: IdSchema,
+  type: z.enum(["card", "group", "combo"]),
+});
+export type Condition = z.infer<typeof ConditionSchema>;
 
-export interface Condition {
-  foreignId: number | string;
-  type: "card" | "group" | "combo";
-}
-
-export interface HandCondition {
-  id: number;
-  name: string;
-  shouldIncludeAtLeastOneOf: Condition[];
-  mustNotInclude: Condition[];
-}
+export const HandConditionSchema = z.object({
+  id: IdSchema,
+  name: z.string(),
+  shouldIncludeAtLeastOneOf: ConditionSchema.array(),
+  mustNotInclude: ConditionSchema.array(),
+});
+export type HandCondition = z.infer<typeof HandConditionSchema>;
 
 export interface CardEnvironment {
   cardGroups: CardGroup[];
   combos: Combo[];
 }
+
+export const DeckDataSchema = z.object({
+  mainDeck: IdSchema.array(),
+  groups: CardGroupSchema.array(),
+  combos: ComboSchema.array(),
+  handConditions: HandConditionSchema.array(),
+});
+
+export const TotalStoreSchema = z.object({
+  data: DeckDataSchema,
+  name: z.string(),
+});
+
+export type DeckData = z.infer<typeof DeckDataSchema>;
