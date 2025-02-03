@@ -84,25 +84,25 @@ export default function Home() {
                 data-name={"tab-header"}
               >
                 <li
-                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.GROUPS ? "border-b-4 border-blue-700" : ""} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
+                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.GROUPS ? "border-b-4 border-blue-700" : "border-teal-600"} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
                   onClick={(e) => handleOpenTab(Tab.GROUPS)}
                 >
                   Groups
                 </li>
                 <li
-                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.COMBOS ? "border-b-4 border-blue-700" : ""} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
+                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.COMBOS ? "border-b-4 border-blue-700" : "border-teal-600"} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
                   onClick={(e) => handleOpenTab(Tab.COMBOS)}
                 >
                   Combos
                 </li>
                 <li
-                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.HAND_CONDITIONS ? "border-b-4 border-blue-700" : ""} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
+                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.HAND_CONDITIONS ? "border-b-4 border-blue-700" : "border-teal-600"} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
                   onClick={(e) => handleOpenTab(Tab.HAND_CONDITIONS)}
                 >
                   Hand
                 </li>
                 <li
-                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.SIMULATION ? "border-b-4 border-blue-700" : ""} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
+                  className={`rounded-t-md bg-teal-500 ${openTab === Tab.SIMULATION ? "border-b-4 border-blue-700" : "border-teal-600"} px-4 py-0.5 text-2xl font-semibold hover:bg-teal-600`}
                   onClick={(e) => handleOpenTab(Tab.SIMULATION)}
                 >
                   Simulation
