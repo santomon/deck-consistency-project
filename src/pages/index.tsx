@@ -53,7 +53,7 @@ export default function Home() {
         <meta name="description" content="Deck Consistency Simulation" />
         {/*<link rel="icon" href="/favicon.ico" />*/}
       </Head>
-      <main className="flex min-h-screen flex-col justify-start bg-teal-700 p-5">
+      <main className="flex min-h-screen flex-col justify-start bg-teal-800 p-5">
         <div className="flex flex-col gap-5">
           <div className={"flex flex-row items-center gap-2"}>
             <input
