@@ -184,7 +184,7 @@ const CombosView = () => {
       <div>
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold">Combos</h3>
-          <div className={"flex flex-wrap"}>
+          <div className={"flex flex-wrap gap-4"}>
             {combos.map((combo) => (
               <ContentCard
                 title={combo.name}
