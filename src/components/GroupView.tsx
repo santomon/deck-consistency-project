@@ -7,6 +7,7 @@ import { CardInfo } from "~/types";
 import { retrieveCardInfoInternal } from "~/utils";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
+import ContentCard from "~/components/ContentCard";
 
 const GroupView = () => {
   const [createGroupDialogBoxIsOpen, setCreateGroupDialogBoxIsOpen] =
@@ -130,37 +131,27 @@ const GroupView = () => {
       <div>
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold">Existing Groups</h3>
-          <ul className="space-y-4">
+          <div className="flex flex-wrap gap-4">
             {groups.map((group) => (
-              <li
+              <ContentCard
+                title={group.name}
                 key={group.id}
-                className="flex items-center justify-between rounded-md border border-gray-300 p-4"
+                editCallback={() => {
+                  setActiveGroupId(group.id);
+                  setCreateGroupDialogBoxIsOpen(true);
+                }}
+                deleteCallback={() => {
+                  removeGroup(group.id);
+                }}
               >
                 <div>
-                  <h4 className="text-sm font-medium">{group.name}</h4>
                   <p className="text-xs text-gray-500">
                     Cards: {group.cards.join(", ")}
                   </p>
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveGroupId(group.id);
-                    setCreateGroupDialogBoxIsOpen(true);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    removeGroup(group.id);
-                  }}
-                  className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                >
-                  Remove
-                </button>
-              </li>
+              </ContentCard>
             ))}
-          </ul>
+          </div>
         </div>
         <button onClick={handleCreateGroup}>Create Group</button>
       </div>
