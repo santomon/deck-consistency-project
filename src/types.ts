@@ -108,7 +108,7 @@ export { CardInfoSchema, YGOCardInfoResponseSchema, CardGroupSchema };
 export type HandConditionWhere = "include" | "exclude";
 
 export const ComboPieceSchema = z.object({
-  foreignId: IdSchema,
+  foreignId: z.union([IdSchema, z.string()]),
   type: z.enum(["card", "group"]),
 });
 export type ComboPiece = z.infer<typeof ComboPieceSchema>;
@@ -122,7 +122,7 @@ export const ComboSchema = z.object({
 export type Combo = z.infer<typeof ComboSchema>;
 
 export const ConditionSchema = z.object({
-  foreignId: IdSchema,
+  foreignId: z.union([IdSchema, z.string()]),
   type: z.enum(["card", "group", "combo"]),
 });
 export type Condition = z.infer<typeof ConditionSchema>;
@@ -154,4 +154,3 @@ export const TotalStoreSchema = z.object({
   saveTimeStamp: z.string().datetime(),
 });
 export type TotalStore = z.infer<typeof TotalStoreSchema>;
-
