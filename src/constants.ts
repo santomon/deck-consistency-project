@@ -6,4 +6,5 @@ export enum CardLimit {
 }
 
 export const DEFAULT_HAND_SIZE = 5;
+export const NUMBER_OF_SAVE_SLOTS = 10;
 export const UNKNOWN_CARD_NAME = "Unknown Card";
