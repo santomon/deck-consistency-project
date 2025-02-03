@@ -11,6 +11,7 @@ import { Condition, HandConditionWhere } from "~/types";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
+import ContentCard from "~/components/ContentCard";
 
 const HandsCondition = () => {
   const [
@@ -241,14 +242,20 @@ const HandsCondition = () => {
       <div>
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold">Hand Conditions</h3>
-          <ul className="space-y-4">
+          <div className="flex flex-wrap gap-4">
             {handConditions.map((handCondition) => (
-              <li
+              <ContentCard
+                title={handCondition.name}
                 key={handCondition.id}
-                className="flex items-center justify-between rounded-md border border-gray-300 p-4"
+                editCallback={() => {
+                  setActiveHandConditionId(handCondition.id);
+                  setCreateHandConditionDialogBoxIsOpen(true);
+                }}
+                deleteCallback={() => {
+                  removeHandCondition(handCondition.id);
+                }}
               >
                 <div>
-                  <h4 className="text-sm font-medium">{handCondition.name}</h4>
                   <p className="text-xs text-gray-500">
                     Should Include one of:{" "}
                     {handCondition.shouldIncludeAtLeastOneOf
@@ -266,25 +273,9 @@ const HandsCondition = () => {
                       .join(", ")}
                   </p>
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveHandConditionId(handCondition.id);
-                    setCreateHandConditionDialogBoxIsOpen(true);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    removeHandCondition(handCondition.id);
-                  }}
-                  className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                >
-                  Remove
-                </button>
-              </li>
+              </ContentCard>
             ))}
-          </ul>
+          </div>
         </div>
         <button onClick={handleCreateHandCondition}>Create Combo</button>
       </div>
