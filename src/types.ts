@@ -146,10 +146,12 @@ export const DeckDataSchema = z.object({
   combos: ComboSchema.array(),
   handConditions: HandConditionSchema.array(),
 });
+export type DeckData = z.infer<typeof DeckDataSchema>;
 
 export const TotalStoreSchema = z.object({
   data: DeckDataSchema,
   name: z.string(),
+  saveTimeStamp: z.string().datetime(),
 });
+export type TotalStore = z.infer<typeof TotalStoreSchema>;
 
-export type DeckData = z.infer<typeof DeckDataSchema>;
