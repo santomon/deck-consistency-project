@@ -13,6 +13,7 @@ import { retrieveCardInfoInternal } from "~/utils";
 import DialogBox from "~/components/Dialogbox";
 import { AutoSelect } from "~/components/AutoSelect";
 import { ChipSSF } from "~/components/ChipSSF";
+import ContentCard from "~/components/ContentCard";
 
 const CombosView = () => {
   const [createComboDialogBoxIsOpen, setCreateComboDialogBoxIsOpen] =
@@ -183,43 +184,31 @@ const CombosView = () => {
       <div>
         <div className="mt-6">
           <h3 className="mb-4 text-lg font-bold">Combos</h3>
-          <ul className="space-y-4">
+          <div className={"flex flex-wrap"}>
             {combos.map((combo) => (
-              <li
+              <ContentCard
+                title={combo.name}
                 key={combo.id}
-                className="flex items-center justify-between rounded-md border border-gray-300 p-4"
+                editCallback={() => {
+                  setActiveComboId(combo.id);
+                  setCreateComboDialogBoxIsOpen(true);
+                }}
+                deleteCallback={() => {
+                  removeCombo(combo.id);
+                }}
               >
-                <div>
-                  <h4 className="text-sm font-medium">{combo.name}</h4>
-                  <p className="text-xs text-gray-500">
-                    Pieces:{" "}
-                    {combo.comboPieces
-                      .map((comboPiece) => {
-                        return getNameFromComboPiece(comboPiece);
-                      })
-                      .join(", ")}
-                  </p>
-                </div>
+                <p className="text-xs text-gray-500">
+                  Pieces:{" "}
+                  {combo.comboPieces
+                    .map((comboPiece) => {
+                      return getNameFromComboPiece(comboPiece);
+                    })
+                    .join(", ")}
+                </p>
                 Number required: {combo.numberRequired}
-                <button
-                  onClick={() => {
-                    setActiveComboId(combo.id);
-                    setCreateComboDialogBoxIsOpen(true);
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    removeCombo(combo.id);
-                  }}
-                  className="rounded bg-red-500 px-3 py-1 text-white hover:bg-red-600"
-                >
-                  Remove
-                </button>
-              </li>
+              </ContentCard>
             ))}
-          </ul>
+          </div>
         </div>
         <button onClick={handleCreateCombo}>Create Combo</button>
       </div>
